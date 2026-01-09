@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { socketService } from '../services/socket.service';
 import JobSeekerProfile from '../models/JobSeekerProfile';
 import User from '../models/User';
+import { mailService } from '../services/mail.service';
 
 export const applyToJob = async (req: Request, res: Response) => {
     try {
@@ -64,7 +65,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
 
         // Ensure Employer owns the job
         // @ts-ignore
-        const job = await Job.findOne({ _id: id, employerId: req.user?._id });
+        const job = await Job.findOne({ _id: id, employerId: req.user?._id }).populate('companyProfileId');
         if (!job) return sendError(res, 404, 'Job not found or access denied');
 
         // Find candidate
@@ -74,6 +75,23 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
         // Update Status
         candidate.status = status;
         await job.save();
+
+        // Send Email Notification
+        if (status === 'SHORTLISTED' || status === 'INTERVIEW') {
+            const user = await User.findById(userId);
+            if (user && user.email) {
+                // @ts-ignore
+                const companyName = job.companyProfileId?.companyName || "YuvaSetu Employer";
+                
+                await mailService.sendStatusUpdateEmail(
+                    user.email,
+                    job.title,
+                    companyName,
+                    status,
+                    user.name || "Candidate"
+                );
+            }
+        }
 
         // Real-Time Notification to Job Seeker
         socketService.emitToUser(userId, 'application_status_updated', {
@@ -150,7 +168,7 @@ export const getJobCandidates = async (req: Request, res: Response) => {
 
         // Fetch Profiles
         const profiles = await JobSeekerProfile.find({ userId: { $in: candidateUserIds } })
-            .select('userId personalInfo.fullName personalInfo.profilePicture professionalProfile.skills professionalProfile.experience');
+            .select('userId personalInfo.fullName personalInfo.profilePicture skills experience');
 
         // Map candidates to result
         const candidates = job.candidates.map(candidate => {
@@ -161,8 +179,8 @@ export const getJobCandidates = async (req: Request, res: Response) => {
                 appliedAt: candidate.appliedAt,
                 name: profile?.personalInfo?.fullName || 'Unknown Candidate',
                 avatar: profile?.personalInfo?.profilePicture || '',
-                skills: profile?.professionalProfile?.skills || [],
-                experience: profile?.professionalProfile?.experience || 0, // Years?
+                skills: profile?.skills || [],
+                experience: profile?.experience?.length || 0, // Number of roles as proxy for years
                 matchScore: 0 // Ideally calculate this dynamically
             };
         });
