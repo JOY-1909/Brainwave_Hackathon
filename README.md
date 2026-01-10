@@ -10,10 +10,10 @@ This guide will help you start the project on your computer, even if you are new
 Before you start, make sure you have these two programs installed on your computer.
 
 1.  **Node.js** (The engine that runs the code)
-    *   Download it here: [https://nodejs.org/](https://nodejs.org/)
-    *   Install the "LTS" version (Recommended for Most Users).
+    - Download it here: [https://nodejs.org/](https://nodejs.org/)
+    - Install the "LTS" version (Recommended for Most Users).
 2.  **Git** (To manage the code)
-    *   Download it here: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+    - Download it here: [https://git-scm.com/downloads](https://git-scm.com/downloads)
 
 ---
 
@@ -46,14 +46,9 @@ The "Backend" handles the database and the logic.
     npm install
     ```
 4.  **Create the Secret Password File (.env)**:
-    *   Create a new file named `.env` inside the `backend` folder.
-    *   Copy everything from `.env.example` into `.env`.
-    *   *Ask the project owner for the real values if you don't have them!*
-5.  Start the Backend:
-    ```bash
-    npm run dev
-    ```
-    *   You should see: `Server running on port 5000` and `MongoDB Connected`.
+    - Create a new file named `.env` inside the `backend` folder.
+    - Copy everything from `.env.example` into `.env`.
+    - _Ask the project owner for the real values if you don't have them!_
 
 ---
 
@@ -63,29 +58,47 @@ The "Frontend" is what you see in the browser.
 
 1.  Open **Another New Terminal** window.
 2.  Go to the frontend folder:
+
     ```bash
     cd frontend
     ```
+
 3.  Install the necessary libraries:
     ```bash
     npm install
     ```
 4.  **Create the Secret Password File (.env)**:
-    *   Create a new file named `.env` inside the `frontend` folder.
-    *   Copy everything from `.env.example` into `.env`.
-5.  Start the Website:
+    - Create a new file named `.env` inside the `frontend` folder.
+    - Copy everything from `.env.example` into `.env`.
+
+---
+
+## 🚀 Step 5: Run the Project
+
+Now that both Backend and Frontend are set up, you can run them together from the main folder!
+
+1.  Go back to the main folder (if you are not already there):
+    ```bash
+    cd ..
+    ```
+2.  Start the development server:
+
     ```bash
     npm run dev
     ```
-6.  You will see a link like `http://localhost:8080`. **Ctrl + Click** that link to open the website!
+
+    This command will start both the backend server (on port 5000) and the frontend server (on port 5173) concurrently.
+
+    - **Frontend**: `http://localhost:5173` (Open this to see the website!)
+    - **Backend**: `http://localhost:5000`
 
 ---
 
 ## 🐞 Troubleshooting (If things go wrong)
 
-*   **"Command not found"**: Make sure you installed Node.js in Step 1.
-*   **"MongoDB Connection Error"**: Check if your `.env` file in the `backend` folder has the correct `MONGO_URI`.
-*   **"Port already in use"**: This means another program is using the same port. Close other terminals or restart your computer.
+- **"Command not found"**: Make sure you installed Node.js in Step 1.
+- **"MongoDB Connection Error"**: Check if your `.env` file in the `backend` folder has the correct `MONGO_URI`.
+- **"Port already in use"**: This means another program is using the same port. Close other terminals or restart your computer.
 
 ---
 

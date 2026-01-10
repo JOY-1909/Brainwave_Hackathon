@@ -65,7 +65,7 @@ export const SkillGapAnalysis = () => {
             Select a job to verify your skills against. Go to the Job Board or your Applications.
           </p>
         </div>
-        <Button onClick={() => navigate('/dashboard/jobs')} className="gap-2">
+        <Button onClick={() => navigate('/dashboard')} className="gap-2">
           Browse Jobs
           <ArrowRight className="w-4 h-4" />
         </Button>
