@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Check, User, GraduationCap, Briefcase, Cpu, PartyPopper, Sparkles, Folder, Award, Eye, EyeOff, Download } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, User, GraduationCap, Briefcase, Cpu, PartyPopper, Sparkles, Folder, Award, Eye, EyeOff, Download, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PersonalDetails } from './steps/PersonalDetails';
 import { Education } from './steps/Education';
@@ -29,6 +29,7 @@ export const MultiStepForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [showStepSuccess, setShowStepSuccess] = useState(false);
   const { data, updateData } = useOnboarding();
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -39,7 +40,6 @@ export const MultiStepForm = () => {
   // Initialize data for Edit Mode
   useEffect(() => {
     if (editMode && initialProfileData) {
-      // Deep merge or ensure types match. For now, assuming structure matches.
       updateData(initialProfileData);
     }
   }, []);
@@ -77,6 +77,28 @@ export const MultiStepForm = () => {
     if (formContainer) formContainer.scrollTop = 0;
   }, [currentStep]);
 
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + Enter -> Next
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+      }
+      // Esc -> Back (Disabled to prevent accidental exits, uncomment if desired)
+      // if (e.key === 'Escape') handleBack();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep, data]); 
+
+  const handleSaveDraft = () => {
+    localStorage.setItem('onboarding_draft', JSON.stringify(data));
+    toast.success("Draft saved successfully", {
+        icon: <Save className="w-4 h-4" />
+    });
+  };
+
   const handleDownloadPDF = async () => {
     setIsExporting(true);
     try {
@@ -94,7 +116,6 @@ export const MultiStepForm = () => {
   };
 
   const handleNext = async () => {
-    // Validation Logic (Simulated for brevity, keeping existing flow)
     if (currentStep === 1) {
       const { email, phone, age, linkedin, github, portfolio } = data.personalInfo;
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast.error("Please enter a valid email address"); return; }
@@ -120,7 +141,6 @@ export const MultiStepForm = () => {
     if (isLastStep) {
       setIsExporting(true);
       try {
-        // Only generate PDF if NOT in Edit Mode
         if (!editMode) {
           const result = await exportResumeToPDF(data, `${data.personalInfo.fullName || 'resume'}.pdf`);
           if (!result.success) {
@@ -136,7 +156,6 @@ export const MultiStepForm = () => {
             const { completeOnboarding, saveJobSeekerProfile } = await import('@/lib/auth-api');
             await saveJobSeekerProfile(token, data);
 
-            // Only mark complete if not already editing
             if (!editMode) {
               await completeOnboarding(token);
             }
@@ -164,6 +183,8 @@ export const MultiStepForm = () => {
         setIsExporting(false);
       }
     } else {
+      setShowStepSuccess(true);
+      setTimeout(() => setShowStepSuccess(false), 2000);
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -228,14 +249,28 @@ export const MultiStepForm = () => {
         </div>
 
         <div className="flex-none px-6 py-4 border-t border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950 flex justify-between items-center z-20">
-          <Button variant="ghost" onClick={handleBack} disabled={currentStep === 1} className="text-slate-500 hover:text-slate-900">
-            Back
-          </Button>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={handleBack} disabled={currentStep === 1} className="text-slate-500 hover:text-slate-900">
+              Back
+            </Button>
+            <Button variant="ghost" onClick={handleSaveDraft} className="text-slate-500 hover:text-primary">
+               <Save className="w-4 h-4 mr-2" />
+               <span className="hidden sm:inline">Save</span>
+            </Button>
+          </div>
+          
+          <div className="flex gap-3 relative">
+             {/* Micro-interaction Tick */}
+             {showStepSuccess && (
+                <div className="absolute -top-12 right-1/2 translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-in fade-in slide-in-from-bottom-2 shadow-lg flex items-center gap-1 z-50">
+                   <Check className="w-3 h-3" /> Saved
+                </div>
+             )}
+
             <Button variant="outline" onClick={handleDownloadPDF} disabled={isExporting} className="hidden md:flex rounded-full border-slate-200">
               <Download className="w-4 h-4 mr-2" /> PDF
             </Button>
-            <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg shadow-black/5">
+            <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg shadow-black/5 transition-all active:scale-95">
               {isExporting ? 'Saving...' : isLastStep ? 'Finish' : 'Next'}
               {!isLastStep && <ChevronRight className="w-4 h-4 ml-2" />}
             </Button>

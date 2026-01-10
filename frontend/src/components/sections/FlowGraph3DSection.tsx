@@ -1,293 +1,294 @@
-import { RevealOnScroll } from '@/components/RevealOnScroll';
+import { RevealOnScroll, StaggerContainer } from '@/components/RevealOnScroll';
 import { useParallax } from '@/hooks/useParallax';
+import { ArrowRight, Check, X, Zap, Target, Eye } from 'lucide-react';
+import { useRef, useState } from 'react';
 
-// What others do (the frustrating stuff)
+// Traditional approach pain points
 const traditionalFlow = [
   {
-    emoji: '🔍',
-    title: 'Scroll. Scroll. Scroll...',
-    description: 'Usually takes about an hour just browsing through hundreds of listings that might not even fit.',
-    color: 'from-red-500/20 to-orange-500/20',
-    note: 'exhausting',
+    icon: '🔍',
+    title: 'Endless Scrolling',
+    description: 'Hours spent browsing through hundreds of irrelevant listings',
+    metric: '2+ hrs',
+    metricLabel: 'per session',
   },
   {
-    emoji: '📝',
-    title: 'Filter Everything Manually',
-    description: "Location? Check. Experience? Check. Skills match? Maybe? There's gotta be a better way.",
-    color: 'from-orange-500/20 to-amber-500/20',
-    note: 'tedious',
+    icon: '📝',
+    title: 'Manual Filtering',
+    description: 'Constantly adjusting filters that still miss the mark',
+    metric: '50+',
+    metricLabel: 'listings to check',
   },
   {
-    emoji: '❓',
-    title: "Why Am I Seeing This?",
-    description: 'Job says "5 years experience" but you have 2. Why even show it? No idea.',
-    color: 'from-amber-500/20 to-yellow-500/20',
-    note: 'confusing',
+    icon: '❓',
+    title: 'Zero Transparency',
+    description: 'No explanation why certain jobs appear—just guesswork',
+    metric: '0%',
+    metricLabel: 'match clarity',
   },
   {
-    emoji: '🤞',
-    title: 'Apply & Hope',
-    description: 'Hit that apply button on 20+ jobs and cross your fingers. Not ideal, right?',
-    color: 'from-yellow-500/20 to-orange-500/20',
-    note: 'hoping',
+    icon: '🤞',
+    title: 'Spray & Pray',
+    description: 'Mass applying with fingers crossed and hope for callbacks',
+    metric: '20+',
+    metricLabel: 'applications needed',
   },
 ];
 
-// What we do (the smart way)
+// YuvaSetu's intelligent approach
 const yuvaSetuFlow = [
   {
-    emoji: '🧠',
-    title: 'We Actually Read Your Profile',
-    description: 'Our AI gets what you can do (not just keyword matching). Like having a friend who really understands you.',
-    color: 'from-blue-500/30 to-primary/30',
-    highlight: 'No more keywords game',
+    icon: '🧠',
+    title: 'Semantic Understanding',
+    description: 'AI that truly comprehends your skills, not just keyword matching',
+    metric: 'Deep',
+    metricLabel: 'profile analysis',
   },
   {
-    emoji: '🎯',
-    title: 'Only Your Top 5',
-    description: 'We pick the 5 best matches for YOU. Quality over quantity always wins.',
-    color: 'from-primary/30 to-accent/30',
-    highlight: 'Just 5. That\'s it.',
+    icon: '🎯',
+    title: 'Curated Top 5',
+    description: 'Only your most relevant opportunities—quality over quantity',
+    metric: '5',
+    metricLabel: 'perfect matches',
   },
   {
-    emoji: '👀',
-    title: 'See Exactly Why',
-    description: '70% skills match, 30% location - boom, there\'s your breakdown. No mysteries here.',
-    color: 'from-accent/30 to-teal-500/30',
-    highlight: 'Full transparency',
+    icon: '👀',
+    title: 'Full Transparency',
+    description: 'See exactly why each job matches with detailed breakdowns',
+    metric: '100%',
+    metricLabel: 'explainable',
   },
   {
-    emoji: '❤️',
-    title: 'Apply with Confidence',
-    description: 'You know why it matches. You know it fits. Now go get that job! 💪',
-    color: 'from-teal-500/30 to-green-500/30',
-    highlight: 'You got this',
+    icon: '✅',
+    title: 'Confident Applications',
+    description: 'Apply knowing exactly why you\'re a great fit for the role',
+    metric: '3x',
+    metricLabel: 'better response',
   },
 ];
+
+// Comparison card with 3D tilt
+const ComparisonCard = ({ 
+  children, 
+  className = '',
+  variant = 'default',
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  variant?: 'default' | 'highlight';
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState('');
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 25;
+    const rotateY = (centerX - x) / 25;
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`);
+  };
+
+  const handleMouseLeave = () => setTransform('');
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`transition-all duration-300 ease-out ${className}`}
+      style={{ transform }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const FlowGraph3DSection = () => {
   const parallaxSlow = useParallax(0.1);
-  const parallaxFast = useParallax(0.2);
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
-      {/* Background - keep it subtle */}
-      <div className="absolute inset-0">
+    <section className="relative py-24 md:py-36 overflow-hidden bg-gradient-to-b from-background via-secondary/5 to-background">
+      {/* Sophisticated background */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Subtle grid pattern */}
         <div 
-          className="absolute inset-0 bg-gradient-to-b from-background via-muted/5 to-background"
-          style={{ transform: `translateY(${parallaxSlow}px)` }}
+          className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+            backgroundSize: '40px 40px',
+          }}
         />
         
-        {/* Some floating elements but not too much */}
+        {/* Gradient orbs */}
         <div 
-          className="absolute top-20 left-[5%] w-48 h-48 rounded-full bg-primary/5 blur-3xl"
-          style={{ transform: `translateY(${parallaxFast}px)` }}
+          className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-blob-morph"
+          style={{ transform: `translateY(${parallaxSlow}px)` }}
         />
         <div 
-          className="absolute bottom-32 right-[8%] w-56 h-56 rounded-full bg-accent/5 blur-3xl"
-          style={{ animationDelay: '1s', transform: `translateY(${parallaxSlow}px)` }}
+          className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] animate-blob-morph"
+          style={{ animationDelay: '5s' }}
         />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header - conversational */}
+        {/* Section Header */}
         <RevealOnScroll className="text-center mb-16 md:mb-20">
-          <div className="inline-block mb-4">
-            <span className="inline-block px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold border border-primary/20">
-              Here's the difference ✨
-            </span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-sm font-medium text-primary">The Difference</span>
           </div>
           
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
-            Job Hunting, <span className="text-primary">Reimagined</span>
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+            <span className="text-foreground">Job Hunting,</span>{' '}
+            <span className="text-primary">Reimagined</span>
           </h2>
-          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            Look, we've all been there. Hours of scrolling, dozens of applications, radio silence. 
-            <br className="hidden md:block" />We thought there had to be a better way.
+          
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            We've all experienced the frustration of traditional job searching. 
+            Here's how YuvaSetu transforms that experience.
           </p>
         </RevealOnScroll>
 
-        {/* The actual comparison */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 max-w-6xl mx-auto">
-          {/* LEFT - The old frustrating way */}
+        {/* Comparison Grid */}
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-16">
+          {/* Traditional Approach */}
           <RevealOnScroll delay={100}>
             <div className="relative">
               {/* Header */}
-              <div className="mb-6 md:mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40 mb-3">
-                  <span className="text-sm">❌</span>
-                  <span className="text-sm font-medium text-red-700 dark:text-red-300">The usual way</span>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                  <X className="w-5 h-5 text-red-500" />
                 </div>
-                <h3 className="font-display text-xl md:text-2xl font-bold text-foreground/80">
-                  What everyone else does
-                </h3>
+                <div>
+                  <h3 className="font-semibold text-lg text-foreground">Traditional Approach</h3>
+                  <p className="text-sm text-muted-foreground">What you've been dealing with</p>
+                </div>
               </div>
 
-              {/* Flow - intentionally less uniform */}
-              <div className="space-y-5">
-                {traditionalFlow.map((step, index) => {
-                  return (
-                    <div key={index} className="relative">
-                      {/* Connection line */}
-                      {index < traditionalFlow.length - 1 && (
-                        <div className="absolute left-7 top-[70px] w-0.5 h-10 bg-gradient-to-b from-red-400/30 to-red-300/10 z-0">
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-red-400/50 animate-flow-down" />
+              {/* Cards */}
+              <div className="space-y-3">
+                {traditionalFlow.map((step, index) => (
+                  <ComparisonCard key={index}>
+                    <div className="group rounded-xl bg-card border border-border p-4 hover:border-red-500/30 transition-all duration-300">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                          <span className="text-2xl">{step.icon}</span>
                         </div>
-                      )}
-
-                      {/* Card - varied heights */}
-                      <div className="relative z-10 group">
-                        <div 
-                          className="glass-strong rounded-xl md:rounded-2xl p-4 md:p-5 border border-red-200/40 dark:border-red-800/30 hover:border-red-300/60 dark:hover:border-red-700/50 transition-all duration-300 hover:-translate-y-0.5"
-                          style={{ 
-                            marginLeft: index % 2 === 0 ? '0' : '8px',  // Slight offset alternating
-                          }}
-                        >
-                          <div className="flex items-start gap-3 md:gap-4">
-                            {/* Emoji instead of icon */}
-                            <div className="relative flex-shrink-0">
-                              <div className="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-red-50 dark:bg-red-950/30 flex items-center justify-center border border-red-200/50 dark:border-red-800/30">
-                                <span className="text-2xl md:text-3xl">{step.emoji}</span>
-                              </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2 mb-1.5">
-                                <h4 className="font-semibold text-sm md:text-base text-foreground leading-tight">
-                                  {step.title}
-                                </h4>
-                                <span className="text-xs px-2 py-0.5 rounded-md bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200/50 dark:border-red-800/40 whitespace-nowrap flex-shrink-0">
-                                  {step.note}
-                                </span>
-                              </div>
-                              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                                {step.description}
-                              </p>
-                            </div>
-                          </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-sm text-foreground mb-0.5">{step.title}</h4>
+                          <p className="text-xs text-muted-foreground line-clamp-1">{step.description}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="text-lg font-bold text-red-500">{step.metric}</div>
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{step.metricLabel}</div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </ComparisonCard>
+                ))}
               </div>
             </div>
           </RevealOnScroll>
 
-          {/* RIGHT - Our smarter approach */}
+          {/* YuvaSetu Approach */}
           <RevealOnScroll delay={200}>
             <div className="relative">
               {/* Header */}
-              <div className="mb-6 md:mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 mb-3">
-                  <span className="text-sm">✨</span>
-                  <span className="text-sm font-medium text-primary">How we do it</span>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center animate-glow-breathe">
+                  <Check className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-display text-xl md:text-2xl font-bold">
-                  <span className="text-primary">YuvaSetu's approach</span>
-                </h3>
+                <div>
+                  <h3 className="font-semibold text-lg text-primary">YuvaSetu Approach</h3>
+                  <p className="text-sm text-muted-foreground">Intelligent, transparent matching</p>
+                </div>
               </div>
 
-              {/* Flow - more vibrant and alive */}
-              <div className="space-y-5">
-                {yuvaSetuFlow.map((step, index) => {
-                  return (
-                    <div key={index} className="relative">
-                      {/* Connection line with animation */}
-                      {index < yuvaSetuFlow.length - 1 && (
-                        <div className="absolute left-7 top-[70px] w-0.5 h-10 bg-gradient-to-b from-primary/50 to-accent/30 z-0">
-                          {/* Flowing light effect */}
-                          <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-primary/70 to-transparent animate-flow-down opacity-80" />
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary animate-flow-down shadow-glow-primary" />
+              {/* Cards */}
+              <div className="space-y-3">
+                {yuvaSetuFlow.map((step, index) => (
+                  <ComparisonCard key={index}>
+                    <div className="group rounded-xl bg-card border border-primary/20 p-4 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 group-hover:scale-105 group-hover:rotate-3 transition-all shadow-md">
+                          <span className="text-2xl">{step.icon}</span>
                         </div>
-                      )}
-
-                      {/* Card */}
-                      <div className="relative z-10 group">
-                        <div 
-                          className="glass-strong rounded-xl md:rounded-2xl p-4 md:p-5 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-                          style={{ 
-                            marginLeft: index % 2 === 1 ? '0' : '8px',  // Opposite offset
-                          }}
-                        >
-                          <div className="flex items-start gap-3 md:gap-4">
-                            {/* Emoji - more vibrant */}
-                            <div className="relative flex-shrink-0">
-                              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/20 blur-lg rounded-xl" />
-                              <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
-                                <span className="text-2xl md:text-3xl">{step.emoji}</span>
-                              </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2 mb-1.5">
-                                <h4 className="font-semibold text-sm md:text-base text-foreground leading-tight">
-                                  {step.title}
-                                </h4>
-                                <span className="text-xs px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 whitespace-nowrap flex-shrink-0">
-                                  {step.highlight}
-                                </span>
-                              </div>
-                              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                                {step.description}
-                              </p>
-                            </div>
-                          </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-sm text-foreground mb-0.5">{step.title}</h4>
+                          <p className="text-xs text-muted-foreground line-clamp-1">{step.description}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="text-lg font-bold text-primary">{step.metric}</div>
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{step.metricLabel}</div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </ComparisonCard>
+                ))}
               </div>
             </div>
           </RevealOnScroll>
         </div>
 
-        {/* VS Badge - emoji instead */}
-        <div className="hidden lg:block absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+        {/* VS Divider - Desktop */}
+        <div className="hidden lg:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center shadow-xl border-4 border-background">
-              <span className="text-3xl">⚡</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-30" />
+            <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-xl border-4 border-background">
+              <Zap className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
 
-        {/* Bottom stats - emojis everywhere */}
-        <RevealOnScroll delay={400} className="mt-16 md:mt-20">
-          <div className="glass-strong rounded-2xl md:rounded-3xl p-6 md:p-8 border border-primary/20 max-w-4xl mx-auto">
-            <div className="text-center mb-6">
-              <p className="text-sm md:text-base text-muted-foreground">
-                Real results from real people 👇
-              </p>
+        {/* Bottom Stats */}
+        <RevealOnScroll delay={400}>
+          <div className="bg-card rounded-2xl border border-border p-8 max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h3 className="font-semibold text-lg text-foreground mb-2">The Results Speak for Themselves</h3>
+              <p className="text-sm text-muted-foreground">Real outcomes from our matching platform</p>
             </div>
-            <div className="grid sm:grid-cols-3 gap-6 md:gap-8">
+            
+            <div className="grid sm:grid-cols-3 gap-8">
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary to-blue-600 mb-3 shadow-lg group-hover:scale-105 transition-transform">
-                  <span className="text-3xl md:text-4xl">⚡</span>
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
+                  <Zap className="w-7 h-7 text-primary" />
                 </div>
-                <div className="text-2xl md:text-3xl font-display font-bold text-primary mb-1">40% faster</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Time to find your job</div>
+                <div className="text-3xl font-display font-bold text-foreground mb-1">40%</div>
+                <div className="text-sm text-muted-foreground">Faster Job Search</div>
               </div>
 
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-accent to-teal-600 mb-3 shadow-lg group-hover:scale-105 transition-transform">
-                  <span className="text-3xl md:text-4xl">🎯</span>
+                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
+                  <Target className="w-7 h-7 text-accent" />
                 </div>
-                <div className="text-2xl md:text-3xl font-display font-bold text-primary mb-1">95% accuracy</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Match quality rate</div>
+                <div className="text-3xl font-display font-bold text-foreground mb-1">95%</div>
+                <div className="text-sm text-muted-foreground">Match Accuracy</div>
               </div>
 
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary to-accent mb-3 shadow-lg group-hover:scale-105 transition-transform">
-                  <span className="text-3xl md:text-4xl">👀</span>
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
+                  <Eye className="w-7 h-7 text-primary" />
                 </div>
-                <div className="text-2xl md:text-3xl font-display font-bold text-primary mb-1">99% clear</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Why you matched</div>
+                <div className="text-3xl font-display font-bold text-foreground mb-1">100%</div>
+                <div className="text-sm text-muted-foreground">Explainable Results</div>
               </div>
             </div>
           </div>
+        </RevealOnScroll>
+
+        {/* CTA */}
+        <RevealOnScroll delay={500} className="text-center mt-12">
+          <a 
+            href="/login/seeker"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
+          >
+            Experience the Difference
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </a>
         </RevealOnScroll>
       </div>
     </section>

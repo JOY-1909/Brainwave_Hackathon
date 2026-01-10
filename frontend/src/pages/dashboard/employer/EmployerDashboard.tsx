@@ -23,6 +23,8 @@ const RECENT_CANDIDATES = [
   { id: 3, name: 'Amit Kumar', role: 'Backend Dev', match: 92, job: 'Backend Developer', status: 'Interview' },
 ];
 
+import { Skeleton } from '@/components/ui/skeleton';
+
 export const EmployerDashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('Employer');
@@ -33,6 +35,7 @@ export const EmployerDashboard = () => {
   });
   const [activeJobs, setActiveJobs] = useState<any[]>([]);
   const [recentCandidates, setRecentCandidates] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
@@ -60,6 +63,8 @@ export const EmployerDashboard = () => {
         }
       } catch (error) {
         console.error('Failed to load dashboard data', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadData();
@@ -89,17 +94,29 @@ export const EmployerDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {STATS_DATA.map((stat) => (
-          <div key={stat.label} className="bg-card border border-border p-6 rounded-2xl flex items-center gap-4 hover:shadow-card transition-shadow duration-300">
-            <div className={`w-14 h-14 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center`}>
-              <stat.icon className="w-7 h-7" />
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+             <div key={i} className="bg-card border border-border p-6 rounded-2xl flex items-center gap-4">
+               <Skeleton className="w-14 h-14 rounded-xl" />
+               <div className="space-y-2">
+                 <Skeleton className="h-4 w-24" />
+                 <Skeleton className="h-8 w-12" />
+               </div>
+             </div>
+          ))
+        ) : (
+          STATS_DATA.map((stat) => (
+            <div key={stat.label} className="bg-card border border-border p-6 rounded-2xl flex items-center gap-4 hover:shadow-card transition-shadow duration-300">
+              <div className={`w-14 h-14 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center`}>
+                <stat.icon className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                <h3 className="text-3xl font-display font-bold">{stat.value}</h3>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
-              <h3 className="text-3xl font-display font-bold">{stat.value}</h3>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -111,8 +128,25 @@ export const EmployerDashboard = () => {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {activeJobs.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">No active jobs yet. Post one to get started!</p>
+              {isLoading ? (
+                 Array.from({ length: 3 }).map((_, i) => (
+                   <div key={i} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                      <Skeleton className="h-10 w-24 rounded-lg" />
+                   </div>
+                 ))
+              ) : activeJobs.length === 0 ? (
+                <div className="text-center py-12 flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                    <Briefcase className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-bold">No active jobs</h3>
+                  <p className="text-muted-foreground mb-4">Post your first job to start finding candidates.</p>
+                  <Button onClick={() => navigate('/dashboard/employer/post-job')}>Post a Job</Button>
+                </div>
               ) : (
                 activeJobs.map((job) => (
                   <div key={job._id} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors">
@@ -145,8 +179,24 @@ export const EmployerDashboard = () => {
             <h2 className="font-bold text-xl">Top Candidates</h2>
           </div>
           <div className="p-6 space-y-4">
-            {recentCandidates.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No candidates yet.</p>
+            {isLoading ? (
+               Array.from({ length: 4 }).map((_, i) => (
+                 <div key={i} className="flex items-center gap-4">
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                    <div className="space-y-1 flex-1">
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-3 w-20" />
+                    </div>
+                 </div>
+               ))
+            ) : recentCandidates.length === 0 ? (
+              <div className="text-center py-8">
+                 <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                   <Users className="w-6 h-6 text-muted-foreground" />
+                 </div>
+                 <p className="text-sm font-medium">No candidates yet</p>
+                 <p className="text-xs text-muted-foreground mt-1">Candidates will appear here once they apply.</p>
+              </div>
             ) : (
               recentCandidates.map((candidate) => (
                 <div key={`${candidate.id}-${candidate.jobId}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border">
@@ -171,7 +221,7 @@ export const EmployerDashboard = () => {
               ))
             )}
             {/* View All Details Button underneath if needed, or stick to list */}
-            {recentCandidates.length > 0 && (
+            {!isLoading && recentCandidates.length > 0 && (
               <Button variant="ghost" className="w-full text-xs" onClick={() => navigate('/dashboard/employer/postings')}>
                 View All Applications
               </Button>

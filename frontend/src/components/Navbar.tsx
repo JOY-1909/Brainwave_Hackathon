@@ -73,7 +73,7 @@ export const Navbar = () => {
               Sign In
             </Button>
           </Link>
-          <Link to="/login/seeker">
+          <Link to="/login/seeker?mode=signup">
             <Button variant="seeker" size="sm">
               Get Started
             </Button>
@@ -122,7 +122,7 @@ export const Navbar = () => {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/login/seeker" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link to="/login/seeker?mode=signup" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button variant="seeker" className="w-full">
                   Get Started
                 </Button>

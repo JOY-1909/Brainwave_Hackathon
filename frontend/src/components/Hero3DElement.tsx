@@ -4,65 +4,68 @@ import { Briefcase, TrendingUp, Target, Sparkles, Zap, Users } from 'lucide-reac
 export const Hero3DElement = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [autoRotate, setAutoRotate] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
+  const animationRef = useRef<number>();
+  const angleRef = useRef(0);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Auto-rotation effect
-    let animationFrame: number;
-    let angle = 0;
-
+    // Smooth auto-rotation with CSS-like easing
     const animate = () => {
-      if (autoRotate) {
-        angle += 0.3;
-        setRotation({
-          x: Math.sin(angle * 0.01) * 10,
-          y: Math.cos(angle * 0.01) * 10
-        });
+      if (!isHovering) {
+        angleRef.current += 0.008; // Much slower rotation
+        const x = Math.sin(angleRef.current) * 5; // Reduced from 10 to 5
+        const y = Math.cos(angleRef.current) * 5;
+        setRotation({ x, y });
       }
-      animationFrame = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
-
-    // Mouse move interaction
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      const rotateX = (y / rect.height) * -20;
-      const rotateY = (x / rect.width) * 20;
-
-      setRotation({ x: rotateX, y: rotateY });
-      setAutoRotate(false);
-    };
-
-    const handleMouseLeave = () => {
-      setAutoRotate(true);
-    };
-
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
-      cancelAnimationFrame(animationFrame);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [autoRotate]);
+  }, [isHovering]);
+
+  // Mouse interaction handlers
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    const rotateX = (y / rect.height) * -15; // Reduced intensity
+    const rotateY = (x / rect.width) * 15;
+
+    setRotation({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseEnter = () => setIsHovering(true);
+  
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    // Smooth return to auto-rotation position
+    setRotation({ x: 0, y: 0 });
+  };
 
   return (
     <div 
       ref={containerRef}
-      className="relative w-full max-w-lg mx-auto h-[400px] md:h-[500px] perspective-2000"
+      className="relative w-full max-w-lg mx-auto h-[400px] md:h-[500px]"
       style={{ perspective: '2000px' }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* 3D Card Stack */}
       <div
-        className="relative w-full h-full preserve-3d transition-transform duration-100"
+        className="relative w-full h-full preserve-3d transition-transform duration-500 ease-out"
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
           transformStyle: 'preserve-3d'

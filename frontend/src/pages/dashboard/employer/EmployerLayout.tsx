@@ -37,9 +37,9 @@ export const EmployerLayout = () => {
       className="contents"
       style={{
         // @ts-ignore - CSS variables are valid but TS might complain
-        "--primary": "174 72% 40%",
+        "--primary": "var(--employer)",
         "--primary-foreground": "0 0% 100%",
-        "--ring": "174 72% 40%",
+        "--ring": "var(--employer)",
       } as React.CSSProperties}
     >
       <Outlet />
