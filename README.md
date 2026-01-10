@@ -1,6 +1,6 @@
-# 🧠 Brainwave - Job Application Platform
+# 🧠 YuvaSetu - Job Application Platform
 
-Welcome to **Brainwave**! This is a website where you can find jobs and employers can find great candidates.
+Welcome to **YuvaSetu**! This is a website where you can find jobs and employers can find great candidates.
 This guide will help you start the project on your computer, even if you are new to coding!
 
 ---
