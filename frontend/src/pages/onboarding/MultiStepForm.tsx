@@ -37,6 +37,16 @@ export const MultiStepForm = () => {
   const editMode = location.state?.editMode;
   const initialProfileData = location.state?.profileData;
 
+  // Prevent body scroll on this page
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   // Initialize data for Edit Mode
   useEffect(() => {
     if (editMode && initialProfileData) {
@@ -218,27 +228,74 @@ export const MultiStepForm = () => {
 
   return (
     <div className="h-screen w-full bg-white dark:bg-slate-950 flex flex-col xl:flex-row overflow-hidden font-sans">
-      <div className="flex-1 flex flex-col h-full relative z-10 bg-white dark:bg-slate-950 shadow-xl xl:shadow-none xl:border-r border-slate-200 dark:border-slate-800">
-        <div className="flex-none px-6 py-6 border-b border-slate-100 dark:border-slate-900 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(editMode ? '/dashboard' : '/onboarding')} className="rounded-full hover:bg-slate-100 -ml-2">
-              <ChevronLeft className="w-5 h-5 text-slate-500" />
-            </Button>
-            <div>
-              <h1 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                {editMode ? `Edit ${STEPS[currentStep - 1].title}` : STEPS[currentStep - 1].title}
-              </h1>
-              <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                Step {currentStep} of {STEPS.length}
-              </p>
+      <div className="flex-none flex flex-col h-full relative z-10 bg-white dark:bg-slate-950 shadow-xl xl:shadow-none xl:border-r border-slate-200 dark:border-slate-800 w-full xl:w-[60%]">
+        <div className="flex-none px-6 py-6 border-b border-slate-100 dark:border-slate-900 flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate(editMode ? '/dashboard' : '/onboarding')} className="rounded-full hover:bg-slate-100 -ml-2">
+                <ChevronLeft className="w-5 h-5 text-slate-500" />
+              </Button>
+              <div>
+                <h1 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  {editMode ? `Edit ${STEPS[currentStep - 1].title}` : STEPS[currentStep - 1].title}
+                </h1>
+                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Step {currentStep} of {STEPS.length}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <path className="text-slate-100 dark:text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
-              <path className="text-primary transition-all duration-500 ease-out" strokeDasharray={`${((currentStep) / STEPS.length) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-            <span className="absolute text-[10px] font-bold text-primary">{Math.round((currentStep / STEPS.length) * 100)}%</span>
+          
+          {/* New Horizontal Stepper */}
+          <div className="w-full mt-2">
+            <div className="flex items-center justify-between relative">
+              {/* Progress Line */}
+              <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 dark:bg-slate-800 -z-10 rounded-full" />
+              <div 
+                className="absolute top-1/2 left-0 h-1 bg-primary -z-10 rounded-full transition-all duration-500 ease-in-out" 
+                style={{ width: `${(currentStep - 1) / (STEPS.length - 1) * 100}%` }} 
+              />
+              
+              {STEPS.map((step, index) => {
+                 const isCompleted = step.id < currentStep;
+                 const isCurrent = step.id === currentStep;
+                 const Icon = step.icon;
+                 const isFirst = index === 0;
+                 const isLast = index === STEPS.length - 1;
+
+                 return (
+                   <button 
+                      key={step.id} 
+                      onClick={() => {
+                        if(isCompleted) setCurrentStep(step.id);
+                      }}
+                      disabled={!isCompleted}
+                      className={`relative group flex flex-col items-center justify-center gap-2 bg-white dark:bg-slate-950 p-2 ${isCompleted ? 'cursor-pointer' : 'cursor-default'}`}
+                   >
+                     <div 
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 
+                          ${isCompleted 
+                              ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20 scale-100' 
+                              : isCurrent 
+                                  ? 'bg-white dark:bg-slate-900 border-primary text-primary shadow-xl ring-4 ring-primary/10 scale-110' 
+                                  : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-700 scale-90'
+                          }`}
+                     >
+                       {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
+                     </div>
+                     <span 
+                        className={`
+                            absolute -bottom-6 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300
+                            ${isFirst ? 'left-0 text-left' : isLast ? 'right-0 text-right' : 'left-1/2 -translate-x-1/2 text-center'}
+                            ${isCurrent ? 'text-primary translate-y-0 opacity-100' : 'text-slate-400 translate-y-1 opacity-0 group-hover:opacity-100 group-hover:translate-y-0'}
+                        `}
+                     >
+                        {step.title}
+                     </span>
+                   </button>
+                 );
+              })}
+            </div>
           </div>
         </div>
 
@@ -270,7 +327,7 @@ export const MultiStepForm = () => {
             <Button variant="outline" onClick={handleDownloadPDF} disabled={isExporting} className="hidden md:flex rounded-full border-slate-200">
               <Download className="w-4 h-4 mr-2" /> PDF
             </Button>
-            <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg shadow-black/5 transition-all active:scale-95">
+            <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-lg shadow-black/5 transition-all active:scale-95">
               {isExporting ? 'Saving...' : isLastStep ? 'Finish' : 'Next'}
               {!isLastStep && <ChevronRight className="w-4 h-4 ml-2" />}
             </Button>
@@ -278,7 +335,7 @@ export const MultiStepForm = () => {
         </div>
       </div>
 
-      <div className={`${showPreview ? 'flex' : 'hidden xl:flex'} fixed inset-0 z-50 bg-slate-100 dark:bg-black/90 xl:relative xl:z-0 xl:flex-1 xl:bg-[#F3F4F6] dark:xl:bg-black/50 flex-col items-center justify-center overflow-hidden transition-all duration-300`}>
+      <div className={`${showPreview ? 'flex' : 'hidden xl:flex'} fixed inset-0 z-50 bg-slate-100 dark:bg-black/90 xl:relative xl:z-0 xl:w-[40%] xl:bg-[#F3F4F6] dark:xl:bg-black/50 flex-col items-center justify-center overflow-hidden transition-all duration-300`}>
         <button onClick={() => setShowPreview(false)} className="xl:hidden absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg z-50 text-slate-500">
           <ChevronRight className="w-6 h-6 rotate-90" />
         </button>

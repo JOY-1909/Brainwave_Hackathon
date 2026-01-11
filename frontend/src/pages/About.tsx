@@ -90,13 +90,18 @@ const About = () => {
                 <RevealOnScroll key={founder.name} delay={index * 100}>
                   <div className="glass rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 group">
                     <div className="flex flex-col items-center text-center">
-                      {/* Avatar */}
-                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-3xl font-bold">
-                          {founder.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+                      {/* Avatar - Illustrated Style */}
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-1 mb-6 group-hover:scale-110 transition-transform shadow-xl">
+                        <div className={`w-full h-full rounded-full flex items-center justify-center text-5xl
+                          ${index === 0 ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : ''}
+                          ${index === 1 ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : ''}
+                          ${index === 2 ? 'bg-gradient-to-br from-purple-500 to-pink-600' : ''}
+                          ${index === 3 ? 'bg-gradient-to-br from-orange-500 to-amber-600' : ''}
+                        `}>
+                          {index === 0 && '🎯'}
+                          {index === 1 && '💻'}
+                          {index === 2 && '🎨'}
+                          {index === 3 && '📈'}
                         </div>
                       </div>
 

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Zap, Users, Briefcase, UserSearch } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, Users, Briefcase, UserSearch, Code2, Database, Brain, Rocket, Target, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { use3DEffect } from '@/hooks/use3DEffect';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
@@ -47,7 +47,7 @@ export const HeroSection = () => {
         />
       </div>
 
-      {/* Floating elements using theme colors */}
+      {/* Floating elements with tech icons */}
       <div className="absolute inset-0 overflow-hidden preserve-3d pointer-events-none">
         {/* Subtle floating shapes */}
         <div className="absolute top-1/4 left-[10%] w-3 h-3 bg-primary/15 rounded-full animate-float-3d preserve-3d" />
@@ -56,6 +56,28 @@ export const HeroSection = () => {
         <div className="absolute top-1/2 right-[10%] w-4 h-4 border border-primary/15 rounded-full animate-rotate-3d preserve-3d" />
         <div className="absolute top-[15%] left-[25%] w-2 h-2 bg-primary/10 rounded-full animate-particle-drift" />
         <div className="absolute top-[60%] right-[25%] w-2 h-2 bg-accent/15 rounded-full animate-particle-drift" style={{ animationDelay: '2s' }} />
+        
+        {/* Floating Tech Icons */}
+        <div className="absolute top-[20%] left-[8%] animate-float-3d" style={{ animationDelay: '0s' }}>
+          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center backdrop-blur-sm shadow-lg">
+            <Code2 className="w-6 h-6 text-blue-500/60" />
+          </div>
+        </div>
+        <div className="absolute top-[70%] left-[12%] animate-bounce-3d" style={{ animationDelay: '1s' }}>
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center backdrop-blur-sm shadow-lg">
+            <Brain className="w-5 h-5 text-purple-500/60" />
+          </div>
+        </div>
+        <div className="absolute top-[40%] right-[8%] animate-levitate" style={{ animationDelay: '2s' }}>
+          <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center backdrop-blur-sm shadow-lg">
+            <Database className="w-5 h-5 text-emerald-500/60" />
+          </div>
+        </div>
+        <div className="absolute bottom-[25%] right-[15%] animate-float-3d" style={{ animationDelay: '3s' }}>
+          <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center backdrop-blur-sm shadow-lg">
+            <Rocket className="w-5 h-5 text-orange-500/60" />
+          </div>
+        </div>
       </div>
       
       {/* Content */}
@@ -100,6 +122,9 @@ export const HeroSection = () => {
                 showing you only the most relevant opportunities.
               </p>
               
+              {/* Animated gradient line */}
+              <div className="hidden lg:block w-24 h-1.5 rounded-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-shimmer" />
+              
               {/* Dual CTA Buttons with magnetic hover and animated border */}
               <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 animate-elastic-in preserve-3d stagger-elastic" style={{ animationDelay: '0.4s' }}>
                 <Link to="/login/seeker">
@@ -134,24 +159,26 @@ export const HeroSection = () => {
                     counter1.ref.current = el;
                   }}
                   style={{ transform: statCard1.transform }}
-                  className="text-center p-3 rounded-xl bg-card/80 border border-border shadow-3d backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden"
+                  className="text-center p-4 rounded-2xl bg-gradient-to-br from-blue-500/5 to-blue-500/10 border border-blue-500/20 shadow-lg backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden group hover:border-blue-500/40 hover:shadow-blue-500/10"
                 >
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Zap className="w-4 h-4 text-primary" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center justify-center gap-1 mb-1 relative z-10">
+                    <Zap className="w-5 h-5 text-blue-500" />
                     <span className="font-display text-2xl md:text-3xl font-bold text-foreground">{counter1.count}%</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Faster</p>
+                  <p className="text-xs text-muted-foreground font-medium relative z-10">Faster Matching</p>
                 </div>
                 <div 
                   ref={statCard2.ref}
                   style={{ transform: statCard2.transform }}
-                  className="text-center p-3 rounded-xl bg-card/80 border border-border shadow-3d backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden"
+                  className="text-center p-4 rounded-2xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 shadow-lg backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden group hover:border-accent/40 hover:shadow-accent/10"
                 >
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Users className="w-4 h-4 text-accent" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center justify-center gap-1 mb-1 relative z-10">
+                    <Target className="w-5 h-5 text-accent" />
                     <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Top 5</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Curated</p>
+                  <p className="text-xs text-muted-foreground font-medium relative z-10">Curated Jobs</p>
                 </div>
                 <div 
                   ref={(el) => {
@@ -159,13 +186,14 @@ export const HeroSection = () => {
                     counter3.ref.current = el;
                   }}
                   style={{ transform: statCard3.transform }}
-                  className="text-center p-3 rounded-xl bg-card/80 border border-border shadow-3d backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden"
+                  className="text-center p-4 rounded-2xl bg-gradient-to-br from-purple-500/5 to-purple-500/10 border border-purple-500/20 shadow-lg backdrop-blur-xl preserve-3d transition-transform duration-200 ease-out tilt-3d-hover animate-elastic-in shimmer-overlay relative overflow-hidden group hover:border-purple-500/40 hover:shadow-purple-500/10"
                 >
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center justify-center gap-1 mb-1 relative z-10">
+                    <TrendingUp className="w-5 h-5 text-purple-500" />
                     <span className="font-display text-2xl md:text-3xl font-bold text-foreground">{counter3.count}%</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Clear</p>
+                  <p className="text-xs text-muted-foreground font-medium relative z-10">Explainable AI</p>
                 </div>
               </div>
             </div>

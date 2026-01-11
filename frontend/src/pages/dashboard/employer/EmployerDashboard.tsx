@@ -105,15 +105,29 @@ export const EmployerDashboard = () => {
              </div>
           ))
         ) : (
-          STATS_DATA.map((stat) => (
-            <div key={stat.label} className="bg-card border border-border p-6 rounded-2xl flex items-center gap-4 hover:shadow-card transition-shadow duration-300">
-              <div className={`w-14 h-14 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center`}>
+          STATS_DATA.map((stat, index) => (
+            <div 
+              key={stat.label} 
+              className={`relative overflow-hidden bg-card border border-border p-6 rounded-2xl flex items-center gap-4 
+                hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer
+                ${index === 0 ? 'hover:border-primary/50 hover:shadow-primary/10' : ''}
+                ${index === 1 ? 'hover:border-accent/50 hover:shadow-accent/10' : ''}
+                ${index === 2 ? 'hover:border-orange-500/50 hover:shadow-orange-500/10' : ''}`}
+            >
+              <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} rounded-full blur-2xl opacity-30 group-hover:opacity-50 transition-opacity`} />
+              <div className={`w-14 h-14 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center relative z-10`}>
                 <stat.icon className="w-7 h-7" />
               </div>
-              <div>
+              <div className="relative z-10">
                 <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
                 <h3 className="text-3xl font-display font-bold">{stat.value}</h3>
               </div>
+              {stat.label === 'Interviews Scheduled' && stats.interviews > 0 && (
+                <>
+                  <span className="absolute top-4 right-4 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
+                  <span className="absolute top-4 right-4 w-3 h-3 bg-orange-500 rounded-full" />
+                </>
+              )}
             </div>
           ))
         )}

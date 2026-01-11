@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { deleteUserAccount, fetchProtectedData, updateProfile } from "@/lib/auth-api";
-import { Loader2, AlertTriangle, Building2, User } from "lucide-react";
+import { Loader2, AlertTriangle, Building2, User, CreditCard, Bell } from "lucide-react";
 
 export const EmployerSettings = () => {
   const navigate = useNavigate();
@@ -88,11 +88,23 @@ export const EmployerSettings = () => {
       </div>
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="company">Company Info</TabsTrigger>
-          <TabsTrigger value="billing">Billing</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsList className="grid grid-cols-4 w-full max-w-xl">
+          <TabsTrigger value="account" className="gap-2">
+            <User className="w-4 h-4" />
+            Account
+          </TabsTrigger>
+          <TabsTrigger value="company" className="gap-2">
+            <Building2 className="w-4 h-4" />
+            Company
+          </TabsTrigger>
+          <TabsTrigger value="billing" className="gap-2">
+            <CreditCard className="w-4 h-4" />
+            Billing
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-2">
+            <Bell className="w-4 h-4" />
+            Alerts
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="account" className="space-y-6">

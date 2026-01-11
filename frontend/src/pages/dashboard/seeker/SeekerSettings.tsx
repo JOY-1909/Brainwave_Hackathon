@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { auth } from "@/lib/firebase";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, User, deleteUser } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { User as UserIcon, Bell, Shield, AlertTriangle, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -214,10 +215,19 @@ export const SeekerSettings = () => {
       </div>
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="account" className="gap-2">
+            <UserIcon className="w-4 h-4" />
+            Account
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-2">
+            <Bell className="w-4 h-4" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="privacy" className="gap-2">
+            <Shield className="w-4 h-4" />
+            Privacy
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="account" className="space-y-6">

@@ -222,19 +222,19 @@ export const JobApplication = () => {
 
           {/* Cover Letter Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="py-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
                 Cover Letter (Optional)
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-4">
               <div className="space-y-2">
                 <Label htmlFor="cover-letter" className="sr-only">Cover Letter</Label>
                 <Textarea
                   id="cover-letter"
                   placeholder="Why are you a good fit for this role? Describe your relevant experience..."
-                  className="min-h-[200px] resize-y"
+                  className="min-h-[120px] resize-y"
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                 />
@@ -290,43 +290,7 @@ export const JobApplication = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Your Profile Match</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-end justify-between">
-                  <span className="text-3xl font-bold">{job.matchScore || 'N/A'}%</span>
-                  <span className="text-sm text-green-600 font-medium mb-1">High Match</span>
-                </div>
-                {job.matchScore && (
-                  <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
-                      style={{ width: `${job.matchScore}%` }}
-                    />
-                  </div>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {job.skills?.slice(0, 4).map((skill: string) => (
-                    <Badge key={skill} variant="secondary" className="text-xs">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full gap-2 mt-4 border-primary/20 hover:bg-primary/5 hover:text-primary"
-                  onClick={() => navigate(`/dashboard/skill-gap/${job.id}`)}
-                >
-                  <Zap className="w-4 h-4" />
-                  Analyze Skill Gap
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
