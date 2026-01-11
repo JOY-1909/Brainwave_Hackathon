@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, Send, User, Settings, LogOut, Users, Building2, TrendingUp, FileText } from 'lucide-react';
+import { LayoutDashboard, Briefcase, BookOpen, Send, User, Settings, LogOut, Users, Building2, TrendingUp, FileText, PenTool } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const SEEKER_NAV = [
@@ -7,7 +7,7 @@ const SEEKER_NAV = [
 
   { icon: Send, label: 'Applications', href: '/dashboard/applications' },
   { icon: TrendingUp, label: 'Skill Gap', href: '/dashboard/skill-gap' },
-  { icon: BookOpen, label: 'Upskill', href: '/dashboard/upskill' },
+  { icon: PenTool, label: 'Mock Tests', href: '/dashboard/upskill' },
   { icon: User, label: 'My Profile', href: '/dashboard/profile' },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 
