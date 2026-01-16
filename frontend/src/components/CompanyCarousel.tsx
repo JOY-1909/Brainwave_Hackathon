@@ -23,7 +23,6 @@ const companies = [
 const duplicatedCompanies = [...companies, ...companies];
 
 export const CompanyCarousel = () => {
-  const [isPaused, setIsPaused] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const handleImageError = (companyName: string) => {
@@ -53,13 +52,9 @@ export const CompanyCarousel = () => {
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
           {/* Scrolling Track */}
-          <div
-            className="overflow-hidden"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="overflow-hidden group py-12">
             <div
-              className={`flex gap-12 ${isPaused ? '' : 'animate-scroll-infinite'}`}
+              className="flex gap-12 animate-scroll-infinite group-hover:[animation-play-state:paused]"
               style={{
                 width: 'fit-content',
               }}
@@ -78,7 +73,7 @@ export const CompanyCarousel = () => {
                         <img
                           src={company.logo}
                           alt={`${company.name} logo`}
-                          className="w-20 h-20 object-contain group-hover:scale-110 transition-transform duration-300"
+                          className="w-20 h-20 object-contain group-hover:scale-110 transition-transform duration-300 dark:bg-white dark:rounded-xl dark:p-2"
                           onError={() => handleImageError(company.name)}
                         />
                       ) : (

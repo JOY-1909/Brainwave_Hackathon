@@ -30,9 +30,9 @@ export const DashboardSidebar = () => {
     <div className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex-col z-40 hidden lg:flex">
       {/* Logo */}
       <div className="p-8">
-        <Link to="/dashboard" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-glow">
-            <span className="text-primary-foreground font-display font-bold text-lg">Y</span>
+        <Link to={isEmployer ? "/dashboard/employer" : "/dashboard"} className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-lg bg-background border-2 border-primary flex items-center justify-center shadow-glow overflow-hidden">
+            <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display font-bold text-xl text-foreground">
             Yuva<span className="text-primary">Setu</span>

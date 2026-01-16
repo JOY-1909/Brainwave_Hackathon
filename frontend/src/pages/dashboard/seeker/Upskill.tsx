@@ -28,39 +28,41 @@ const MOCK_TESTS_UI = [
     role: 'Frontend Engineer', 
     category: 'Tech',
     logo: 'https://cdn.simpleicons.org/meta/0668E1', 
-    color: 'bg-blue-50'
+    color: 'bg-blue-50 dark:bg-blue-500/10'
   },
   { 
     id: 'amazon', 
     company: 'Amazon', 
     role: 'SDE / Data Analyst', 
     category: 'Tech',
-    logo: 'https://cdn.simpleicons.org/amazon/FF9900', 
-    color: 'bg-orange-50'
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg', 
+    color: 'bg-orange-50 dark:bg-orange-500/10'
   },
   { 
     id: 'apple', 
     company: 'Apple', 
     role: 'Software Engineer', 
     category: 'Tech',
-    logo: 'https://cdn.simpleicons.org/apple/000000', 
-    color: 'bg-gray-50'
+    logo: 'https://cdn.simpleicons.org/apple/white', // Use white logo for better contrast or handle separately? The default black apple path might be hard to see on dark. Let's stick with specific icon or handle inversion. Using standard for now.
+    // Actually simpleicons has hex. 000000. On dark mode that's invisible if transparency.
+    // Let's use a conditional filter or just a different bg.
+    color: 'bg-gray-50 dark:bg-gray-800/50'
   },
   { 
     id: 'netflix', 
     company: 'Netflix', 
     role: 'Senior Engineer', 
-    category: 'Tech', // Fixed category to match scraper
+    category: 'Tech', 
     logo: 'https://cdn.simpleicons.org/netflix/E50914', 
-    color: 'bg-red-50',
+    color: 'bg-red-50 dark:bg-red-500/10',
   },
   { 
     id: 'google', 
     company: 'Google', 
     role: 'SDE Intern', 
-    category: 'Tech', // Fixed category
+    category: 'Tech', 
     logo: 'https://cdn.simpleicons.org/google/4285F4', 
-    color: 'bg-green-50',
+    color: 'bg-green-50 dark:bg-green-500/10',
   }
 ];
 
@@ -153,7 +155,7 @@ export const Upskill = () => {
     const percentage = Math.round((score / activeTest.questions.length) * 100);
     return (
       <div className="max-w-4xl mx-auto p-8 animate-fade-in text-center min-h-[60vh] flex flex-col justify-center">
-        <div className="bg-white rounded-3xl p-10 shadow-xl border border-slate-200">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 shadow-xl border border-slate-200 dark:border-slate-800">
           <div className="mb-6 flex justify-center">
             {percentage >= 70 ? (
               <CheckCircle className="w-24 h-24 text-green-500 animate-bounce" />
@@ -162,9 +164,9 @@ export const Upskill = () => {
             )}
           </div>
           
-          <h2 className="text-4xl font-bold mb-4 text-slate-800">Test Completed!</h2>
-          <p className="text-slate-500 mb-8 text-xl">
-            You scored <span className="font-bold text-slate-900">{score}</span> out of <span className="font-bold text-slate-900">{activeTest.questions.length}</span>
+          <h2 className="text-4xl font-bold mb-4 text-slate-800 dark:text-white">Test Completed!</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 text-xl">
+            You scored <span className="font-bold text-slate-900 dark:text-white">{score}</span> out of <span className="font-bold text-slate-900 dark:text-white">{activeTest.questions.length}</span>
           </p>
           
           <div className="flex justify-center gap-4">
@@ -183,22 +185,22 @@ export const Upskill = () => {
     return (
       <div className="max-w-5xl mx-auto p-6 animate-fade-in flex flex-col h-[calc(100vh-100px)]">
         {/* Top Bar */}
-        <div className="flex justify-between items-center mb-6 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex justify-between items-center mb-6 bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">{activeTest.company} Assessment</h2>
-            <div className="flex items-center gap-2 text-sm text-slate-500 mt-1">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white">{activeTest.company} Assessment</h2>
+            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mt-1">
               <span>Question {currentQuestionIndex + 1} of {activeTest.questions.length}</span>
             </div>
           </div>
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono font-bold text-lg ${timeLeft < 60 ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono font-bold text-lg ${timeLeft < 60 ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}>
             <Timer className="w-5 h-5" />
             {formatTime(timeLeft)}
           </div>
         </div>
 
         {/* Question Card */}
-        <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-6 overflow-y-auto">
-          <h3 className="text-2xl font-medium text-slate-800 mb-8 leading-relaxed">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8 mb-6 overflow-y-auto">
+          <h3 className="text-2xl font-medium text-slate-800 dark:text-white mb-8 leading-relaxed">
             {currentQ.question}
           </h3>
 
@@ -212,19 +214,19 @@ export const Upskill = () => {
                   className={`
                     p-5 text-left rounded-xl border-2 transition-all duration-200 flex items-center group relative overflow-hidden
                     ${isSelected 
-                      ? 'border-primary bg-primary/5 shadow-md' 
-                      : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50'}
+                      ? 'border-primary bg-primary/5 dark:bg-primary/20 shadow-md' 
+                      : 'border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800/50'}
                   `}
                 >
                   <div className={`
                     w-10 h-10 rounded-full border-2 flex items-center justify-center mr-5 font-bold text-sm shrink-0 transition-colors
                     ${isSelected 
                       ? 'border-primary bg-primary text-white' 
-                      : 'border-slate-300 text-slate-500 group-hover:border-slate-400'}
+                      : 'border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 group-hover:border-slate-400 dark:group-hover:border-slate-500'}
                   `}>
                     {String.fromCharCode(65 + idx)}
                   </div>
-                  <span className={`text-lg ${isSelected ? 'font-medium text-primary' : 'text-slate-700'}`}>
+                  <span className={`text-lg ${isSelected ? 'font-medium text-primary' : 'text-slate-700 dark:text-slate-300'}`}>
                     {option}
                   </span>
                 </button>
@@ -240,7 +242,7 @@ export const Upskill = () => {
               size="lg"
               onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
               disabled={currentQuestionIndex === 0}
-              className="text-slate-500"
+              className="text-slate-500 dark:text-slate-400"
             >
               Previous
             </Button>
@@ -270,11 +272,11 @@ export const Upskill = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-l-4 border-primary pl-4">
         <div>
-          <h1 className="font-display text-3xl font-bold mb-2 text-slate-900">Company Mock Tests</h1>
+          <h1 className="font-display text-3xl font-bold mb-2 text-slate-900 dark:text-white">Company Mock Tests</h1>
           <p className="text-muted-foreground text-lg">Unlock 360° prep with realistic, AI-powered mock exams.</p>
         </div>
         <div className="flex items-center gap-3">
-           <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 ${availableData.length > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+           <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 ${availableData.length > 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'}`}>
               <div className={`w-2 h-2 rounded-full ${availableData.length > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
               {availableData.length > 0 ? "System Online" : "Backend Offline"}
            </div>
@@ -293,8 +295,8 @@ export const Upskill = () => {
             className={`
               px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 border
               ${selectedCategory === category 
-                ? "bg-slate-900 text-white border-slate-900 shadow-md transform scale-105" 
-                : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:bg-slate-50"}
+                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md transform scale-105" 
+                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"}
             `}
           >
             {category}
@@ -307,24 +309,24 @@ export const Upskill = () => {
         {filteredTests.map((test) => (
           <div 
             key={test.id} 
-            className="group bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-[320px]"
+            className="group bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-[320px] backdrop-blur-sm"
           >
             {/* Logo Area */}
-            <div className={`h-32 rounded-xl ${test.color} flex items-center justify-center mb-4 relative overflow-hidden`}>
-               <div className="absolute w-24 h-24 bg-white/50 rounded-full blur-xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className={`h-32 rounded-xl ${test.color} flex items-center justify-center mb-4 relative overflow-hidden transition-colors`}>
+               <div className="absolute w-24 h-24 bg-white/50 dark:bg-white/5 rounded-full blur-xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                <img 
                  src={test.logo} 
                  alt={`${test.company} Logo`} 
-                 className="w-16 h-16 object-contain relative z-10"
+                 className={`w-16 h-16 object-contain relative z-10 ${test.id === 'apple' ? 'dark:invert' : ''}`}
                />
             </div>
 
             {/* Text Content */}
             <div className="space-y-1 mb-6">
-              <h3 className="font-bold text-lg text-slate-900 leading-tight group-hover:text-primary transition-colors">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">
                 {test.role}
               </h3>
-              <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 {test.company}
               </p>
             </div>
@@ -332,7 +334,7 @@ export const Upskill = () => {
             {/* Button */}
             <Button 
               variant="outline" 
-              className="w-full rounded-xl border-slate-300 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all group-hover:shadow-lg"
+              className="w-full rounded-xl border-slate-300 dark:border-slate-700 hover:bg-slate-900 dark:hover:bg-primary hover:text-white hover:border-slate-900 dark:hover:border-primary transition-all group-hover:shadow-lg dark:bg-transparent dark:text-slate-300"
               onClick={() => handleStartTest(test.company)}
             >
               Start Test
@@ -342,7 +344,7 @@ export const Upskill = () => {
         
         {/* Next Arrow */}
         <div className="hidden lg:flex items-center justify-center">
-            <button className="w-14 h-14 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:scale-110 transition-all">
+            <button className="w-14 h-14 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary hover:border-primary dark:hover:border-primary hover:scale-110 transition-all">
                 <ChevronRight className="w-6 h-6" />
             </button>
         </div>

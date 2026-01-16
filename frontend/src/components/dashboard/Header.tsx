@@ -1,5 +1,6 @@
 import { Bell, Menu, Check, CheckCircle2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   Popover,
   PopoverContent,
@@ -108,6 +109,7 @@ export const DashboardHeader = ({ onMenuClick, title }: { onMenuClick?: () => vo
       </div>
 
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">

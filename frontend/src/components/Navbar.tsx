@@ -34,8 +34,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-            <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
+          <div className="relative w-10 h-10 rounded-xl bg-transparent border-[3px] border-black flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+            <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display font-bold text-xl text-foreground">
             Yuva<span className="text-primary">Setu</span>
@@ -68,16 +68,26 @@ export const Navbar = () => {
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
-          <Link to="/login/seeker">
-            <Button variant="ghost" size="sm">
-              Sign In
-            </Button>
-          </Link>
-          <Link to="/login/seeker?mode=signup">
-            <Button variant="seeker" size="sm">
-              Get Started
-            </Button>
-          </Link>
+          {location.pathname === '/about' ? (
+            <Link to="/">
+              <Button variant="seeker" size="sm">
+                Back to Home
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login/seeker">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/login/seeker?mode=signup">
+                <Button variant="seeker" size="sm">
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -117,16 +127,26 @@ export const Navbar = () => {
               <ThemeToggle />
             </div>
             <div className="flex flex-col gap-3 pt-4 border-t border-border">
-              <Link to="/login/seeker" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/login/seeker?mode=signup" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="seeker" className="w-full">
-                  Get Started
-                </Button>
-              </Link>
+              {location.pathname === '/about' ? (
+                <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="seeker" className="w-full">
+                    Back to Home
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login/seeker" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link to="/login/seeker?mode=signup" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="seeker" className="w-full">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

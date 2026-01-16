@@ -110,8 +110,8 @@
     --popover: 222 45% 12%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary - much more vibrant and visible */
-    --primary: 221 90% 65%;
+    /* Primary - much more vibrant and visible but balanced */
+    --primary: 221 70% 55%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - warmer grays with more character */
@@ -122,8 +122,8 @@
     --muted: 215 35% 18%;
     --muted-foreground: 217 15% 72%;
 
-    /* Accent - vibrant and energetic */
-    --accent: 174 80% 55%;
+    /* Accent - vibrant and energetic but balanced */
+    --accent: 174 60% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -132,12 +132,12 @@
     /* Borders - much more visible */
     --border: 215 30% 22%;
     --input: 215 30% 22%;
-    --ring: 221 90% 65%;
+    --ring: 221 70% 55%;
 
-    /* Role-specific colors - vibrant */
-    --seeker: 221 90% 65%;
+    /* Role-specific colors - vibrant but legible */
+    --seeker: 221 70% 55%;
     --seeker-foreground: 0 0% 100%;
-    --employer: 174 80% 55%;
+    --employer: 174 60% 45%;
     --employer-foreground: 0 0% 100%;
 
     /* Custom gradients for dark mode - super vibrant */
@@ -833,9 +833,25 @@
       opacity: 1;
     }
     51%,
+    50% {
+      opacity: 1;
+    }
+    51%,
     100% {
       opacity: 0;
     }
+  }
+
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .animate-cursor-blink {
@@ -847,17 +863,16 @@
     0% {
       opacity: 0;
       transform: translateY(20px);
-      filter: blur(10px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
-      filter: blur(0);
     }
   }
 
   .animate-text-reveal {
-    animation: text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: text-reveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
   }
 
   /* Shimmer/shine effect */
@@ -1078,7 +1093,7 @@
   @keyframes card-entrance {
     0% {
       opacity: 0;
-      transform: perspective(1000px) rotateX(10deg) translateY(50px) scale(0.95);
+      transform: perspective(1000px) rotateX(5deg) translateY(30px) scale(0.98);
     }
     100% {
       opacity: 1;
@@ -1087,7 +1102,8 @@
   }
 
   .animate-card-entrance {
-    animation: card-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: card-entrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
   }
 
   /* Staggered entrance with elastic effect */
@@ -1228,6 +1244,11 @@
 
   .animated-border:hover::before {
     opacity: 1;
+  }
+
+  /* Slower bounce animation */
+  .animate-bounce-slow {
+    animation: bounce 2s infinite;
   }
 }
 

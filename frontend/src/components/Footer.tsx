@@ -44,8 +44,8 @@ export const Footer = () => {
           {/* Brand */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(252_94%_67%)] flex items-center justify-center shadow-glow">
-                <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(252_94%_67%)] flex items-center justify-center shadow-glow overflow-hidden">
+                <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-display font-bold text-xl text-foreground">
                 Yuva<span className="text-primary">Setu</span>

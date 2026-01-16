@@ -62,3 +62,17 @@ export const fetchJobCandidates = async (jobId: string, token: string) => {
     }
     return resData.data;
 };
+
+export const fetchJobAnalytics = async (jobId: string, token: string) => {
+    const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/analytics`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    const resData = await response.json();
+    if (!response.ok) {
+        throw new Error(resData.message || 'Failed to fetch analytics');
+    }
+    return resData.data;
+};

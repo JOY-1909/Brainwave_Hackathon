@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import re
 from crewai import Agent, Task, Crew, LLM
 from crewai_tools import ScrapeWebsiteTool
 from dotenv import load_dotenv
@@ -9,30 +10,47 @@ from pymongo import MongoClient
 # 1. LOAD KEYS
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
-# 2. SETUP GEMINI (Using the alias valid for your account)
-# We changed this from "gemini-1.5-flash" to "gemini-flash-latest"
+# 2. SETUP GEMINI
 my_llm = LLM(
-    model="gemini/gemini-flash-latest",
+    # Switching to the 'Lite' model to bypass the strict limit on 2.5
+    model="gemini/gemini-2.0-flash-lite-preview-02-05", 
     api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-# Setup MongoDB
+# 3. SETUP MONGODB
 mongo_uri = os.getenv("MONGODB_URI")
 if not mongo_uri:
-    raise ValueError("MONGODB_URI not found in environment variables")
+    print("⚠️  Warning: MONGODB_URI not set. Data will not be saved to DB.")
+    collection = None
+else:
+    try:
+        client = MongoClient(mongo_uri)
+        db = client["brainwave"]
+        collection = db["mocktest_data"]
+        print("✅ Connected to MongoDB.")
+    except Exception as e:
+        print(f"❌ MongoDB Connection Failed: {e}")
+        collection = None
 
-try:
-    client = MongoClient(mongo_uri)
-    # Explicitly use 'brainwave' database since URI doesn't specify one
-    db = client["brainwave"] 
-    collection = db["mocktest_data"]
-    print("✅ Connected to MongoDB. Database: brainwave, Collection: mocktest_data")
-except Exception as e:
-    print(f"❌ Failed to connect to MongoDB: {e}")
-    exit(1)
+# 4. HELPER: Extract JSON from messy text
+def extract_json_array(text):
+    """
+    Finds the first [...] block in the text using Regex.
+    This fixes issues where the AI says 'Here is your JSON: [...]'
+    """
+    try:
+        # Regex to find a JSON list: starts with [ and ends with ]
+        match = re.search(r'\[.*\]', text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+        else:
+            # Fallback: Try standard cleanup
+            clean_text = text.replace("```json", "").replace("```", "").strip()
+            return json.loads(clean_text)
+    except Exception:
+        return None
 
-# 3. TARGETS
-# netflix: https://www.simplilearn.com/netflix-interview-questions-article
+# 5. TARGETS
 targets = [
     {"company": "Meta", "profile": "Frontend Engineer", "url": "https://www.geeksforgeeks.org/meta-interview-questions/"},
     {"company": "Amazon", "profile": "SDE / Data Analyst", "url": "https://www.simplilearn.com/tutorials/data-analytics-tutorial/amazon-data-analyst-interview-questions"},
@@ -41,92 +59,93 @@ targets = [
     {"company": "Google", "profile": "SDE Intern", "url": "https://www.geeksforgeeks.org/top-25-interview-questions-for-google-sde-internship/"}
 ]
 
-print(f"🚀 Starting PATIENT AI Scraper (Agent Mode)...")
-print(f"ℹ️  Note: This will take a few minutes to avoid hitting API limits.")
+print(f"🚀 Starting ROBUST AI Scraper...")
 
 for i, target in enumerate(targets):
     print(f"\n------------------------------------------------")
-    print(f"[{i+1}/{len(targets)}] Agent working on: {target['company']}...")
+    print(f"[{i+1}/{len(targets)}] Processing: {target['company']}...")
     
     success = False
     attempts = 0
     
-    # Retry Loop: If 429 error happens, wait and try again
     while not success and attempts < 3:
         try:
             scrape_tool = ScrapeWebsiteTool(website_url=target['url'])
 
-            # The Agent
             extractor = Agent(
-                role='Technical Interview Creator',
-                goal='Extract exactly 15 MCQs from the webpage.',
-                backstory='You are an expert recruiter who creates precise JSON datasets.',
+                role='Technical Recruiter',
+                goal='Create technical MCQs.',
+                backstory='You extract technical questions from text and format them as strict JSON.',
                 tools=[scrape_tool],
                 llm=my_llm,
                 verbose=False
             )
 
-            # The Task
             task = Task(
                 description=f"""
                 Read {target['url']}.
-                Create exactly 15 Multiple Choice Questions (MCQs).
+                Extract exactly 15 Technical/DSA MCQs.
                 
-                STRICT JSON OUTPUT RULES:
-                1. Return ONLY a raw JSON list.
-                2. No markdown, no '```json', just the list.
-                3. Structure: [{{ "question": "...", "options": ["A","B","C","D"], "answer": "..." }}]
+                CRITICAL INSTRUCTION:
+                Return ONLY a valid JSON list. Do NOT return URLs. Do NOT return "Repaired JSON".
+                
+                Format:
+                [
+                    {{ "question": "...", "options": ["A", "B", "C", "D"], "answer": "..." }}
+                ]
                 """,
-                expected_output='A raw JSON list of 15 MCQs.',
+                expected_output='A JSON List.',
                 agent=extractor
             )
 
             crew = Crew(agents=[extractor], tasks=[task])
             result = crew.kickoff()
+            
+            # --- ROBUST PARSING LOGIC ---
+            raw_output = str(result)
+            parsed_questions = extract_json_array(raw_output)
 
-            # Clean & Parse
-            raw_text = str(result).replace("```json", "").replace("```", "").strip()
-            # Try to fix common JSON errors if agent added extra text
-            if raw_text.startswith("Here is"): 
-                start_index = raw_text.find("[")
-                if start_index != -1:
-                    raw_text = raw_text[start_index:]
-            
-            parsed_questions = json.loads(raw_text)
+            if not parsed_questions or not isinstance(parsed_questions, list):
+                raise ValueError("AI returned invalid JSON format.")
 
-            data_entry = {
-                "company": target['company'],
-                "profile": target['profile'],
-                "questions": parsed_questions,
-                "source": target['url'],
-                "scraped_at": time.strftime("%Y-%m-%d %H:%M:%S")
-            }
-            
-            # Insert into MongoDB
-            collection.insert_one(data_entry)
-            
-            print(f"✅ Success! Extracted {len(parsed_questions)} questions and saved to MongoDB.")
+            if collection:
+                data_entry = {
+                    "company": target['company'],
+                    "profile": target['profile'],
+                    "questions": parsed_questions,
+                    "source": target['url'],
+                    "scraped_at": time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                collection.update_one(
+                    {"company": target['company'], "profile": target['profile']},
+                    {"$set": data_entry},
+                    upsert=True
+                )
+                print(f"✅ Success! Saved {len(parsed_questions)} questions to DB.")
+            else:
+                print(f"✅ Extracted {len(parsed_questions)} questions (DB Mode Off).")
+
             success = True
 
         except Exception as e:
             error_msg = str(e)
-            if "429" in error_msg or "Resource exhausted" in error_msg:
-                print(f"⚠️  Rate Limit Hit (429). Cooling down for 60 seconds...")
-                time.sleep(60) # Wait 1 minute before retrying
+            if "429" in error_msg:
+                print(f"⚠️  Rate Limit Hit. Waiting 60s...")
+                time.sleep(60)
                 attempts += 1
-            elif "404" in error_msg:
-                 print(f"❌ Model Not Found Error: {e}")
-                 break
+            elif "Expecting value" in error_msg or "JSON" in error_msg:
+                print(f"⚠️  JSON Parse Error on attempt {attempts+1}. Retrying...")
+                attempts += 1
             else:
-                print(f"❌ Error: {e}")
-                break # Non-limit error, skip to next company
+                print(f"❌ Error on {target['company']}: {e}")
+                break 
 
-    # Safety Pause between companies even on success
+    # Safety Pause
     if i < len(targets) - 1:
-        print("⏳ Pausing 20s for API safety...")
-        time.sleep(20)
+        print("⏳ Pausing 15s...")
+        time.sleep(15)
 
-print(f"\n🎉 ALL DONE! Data saved to MongoDB collection 'mocktest_data'")
+print(f"\n🎉 Scraper Finished!")
 
 
 
