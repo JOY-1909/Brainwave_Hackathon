@@ -1,37 +1,33 @@
-import { RevealOnScroll, StaggerContainer } from '@/components/RevealOnScroll';
+import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { useParallax } from '@/hooks/useParallax';
 import { ArrowRight, Check, X, Zap, Target, Eye } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 // Traditional approach pain points
 const traditionalFlow = [
   {
     icon: '🔍',
     title: 'Endless Scrolling',
-    description: 'Hours spent browsing through hundreds of irrelevant listings',
-    metric: '2+ hrs',
-    metricLabel: 'per session',
+    description: 'Hours browsing irrelevant listings',
+    metric: '2+ hrs/day',
   },
   {
     icon: '📝',
     title: 'Manual Filtering',
-    description: 'Constantly adjusting filters that still miss the mark',
-    metric: '50+',
-    metricLabel: 'listings to check',
+    description: 'Adjusting filters that still miss',
+    metric: '50+ sites',
   },
   {
     icon: '❓',
     title: 'Zero Transparency',
-    description: 'No explanation why certain jobs appear—just guesswork',
-    metric: '0%',
-    metricLabel: 'match clarity',
+    description: 'No idea why jobs appear',
+    metric: '0% clarity',
   },
   {
     icon: '🤞',
     title: 'Spray & Pray',
-    description: 'Mass applying with fingers crossed and hope for callbacks',
-    metric: '20+',
-    metricLabel: 'applications needed',
+    description: 'Hoping for callbacks',
+    metric: '2% reply',
   },
 ];
 
@@ -40,256 +36,205 @@ const yuvaSetuFlow = [
   {
     icon: '🧠',
     title: 'Semantic Understanding',
-    description: 'AI that truly comprehends your skills, not just keyword matching',
-    metric: 'Deep',
-    metricLabel: 'profile analysis',
+    description: 'AI understands your true skills',
+    metric: 'Deep Analysis',
   },
   {
     icon: '🎯',
     title: 'Curated Top 5',
-    description: 'Only your most relevant opportunities—quality over quantity',
-    metric: '5',
-    metricLabel: 'perfect matches',
+    description: 'Only your perfect matches',
+    metric: 'Top 5 matches',
   },
   {
     icon: '👀',
     title: 'Full Transparency',
-    description: 'See exactly why each job matches with detailed breakdowns',
-    metric: '100%',
-    metricLabel: 'explainable',
+    description: 'Detailed match breakdown',
+    metric: '100% clarity',
   },
   {
     icon: '✅',
     title: 'Confident Applications',
-    description: 'Apply knowing exactly why you\'re a great fit for the role',
-    metric: '3x',
-    metricLabel: 'better response',
+    description: 'Apply knowing you fit',
+    metric: '3x callbacks',
   },
 ];
 
-// Comparison card with 3D tilt
 const ComparisonCard = ({ 
   children, 
   className = '',
-  variant = 'default',
 }: { 
   children: React.ReactNode; 
   className?: string;
-  variant?: 'default' | 'highlight';
 }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState('');
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = (y - centerY) / 25;
-    const rotateY = (centerX - x) / 25;
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`);
-  };
-
-  const handleMouseLeave = () => setTransform('');
-
   return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={`transition-all duration-300 ease-out ${className}`}
-      style={{ transform }}
-    >
+    <div className={`transition-all duration-300 ease-out ${className}`}>
       {children}
     </div>
   );
 };
 
 export const FlowGraph3DSection = () => {
-  const parallaxSlow = useParallax(0.1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      
+      const { top, height } = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate progress: 0 when top enters view, 1 when bottom leaves
+      // We want animation to happen when section is sticky
+      // Adjust start/end points for smoother control
+      const scrollDistance = height - windowHeight;
+      const scrolled = -top;
+      
+      let p = scrolled / scrollDistance;
+      p = Math.max(0, Math.min(1, p));
+      
+      setProgress(p);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Init
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Animation values
+  const traditionalOpacity = Math.max(0, 1 - progress * 2.5); // Fades out by 40%
+  const traditionalScale = 1 - progress * 0.2; // Shrinks slightly
+  const traditionalBlur = progress * 10; // Blurs out
+  
+  const yuvaOpacity = Math.max(0, (progress - 0.4) * 2.5); // Fades in after 40%
+  const yuvaScale = 0.8 + Math.min(0.2, (progress - 0.4) * 0.5); // Grows in
+  const yuvaBlur = Math.max(0, 10 - (progress - 0.4) * 20); // Unblurs
 
   return (
-    <section className="relative py-24 md:py-36 overflow-hidden bg-gradient-to-b from-background via-secondary/5 to-background">
-      {/* Sophisticated background */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Subtle grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
-          }}
-        />
-        
-        {/* Gradient orbs */}
-        <div 
-          className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-blob-morph"
-          style={{ transform: `translateY(${parallaxSlow}px)` }}
-        />
-        <div 
-          className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] animate-blob-morph"
-          style={{ animationDelay: '5s' }}
-        />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <RevealOnScroll className="text-center mb-16 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-primary">The Difference</span>
-          </div>
-          
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            <span className="text-foreground">Job Hunting,</span>{' '}
-            <span className="text-primary">Reimagined</span>
-          </h2>
-          
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            We've all experienced the frustration of traditional job searching. 
-            Here's how YuvaSetu transforms that experience.
-          </p>
-        </RevealOnScroll>
-
-        {/* Comparison Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-16">
-          {/* Traditional Approach */}
-          <RevealOnScroll delay={100}>
-            <div className="relative">
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                  <X className="w-5 h-5 text-red-500" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-foreground">Traditional Approach</h3>
-                  <p className="text-sm text-muted-foreground">What you've been dealing with</p>
-                </div>
-              </div>
-
-              {/* Cards */}
-              <div className="space-y-3">
-                {traditionalFlow.map((step, index) => (
-                  <ComparisonCard key={index}>
-                    <div className="group rounded-xl bg-card border border-border p-4 hover:border-red-500/30 transition-all duration-300">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-                          <span className="text-2xl">{step.icon}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-sm text-foreground mb-0.5">{step.title}</h4>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{step.description}</p>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <div className="text-lg font-bold text-red-500">{step.metric}</div>
-                          <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{step.metricLabel}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </ComparisonCard>
-                ))}
-              </div>
-            </div>
-          </RevealOnScroll>
-
-          {/* YuvaSetu Approach */}
-          <RevealOnScroll delay={200}>
-            <div className="relative">
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center animate-glow-breathe">
-                  <Check className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-primary">YuvaSetu Approach</h3>
-                  <p className="text-sm text-muted-foreground">Intelligent, transparent matching</p>
-                </div>
-              </div>
-
-              {/* Cards */}
-              <div className="space-y-3">
-                {yuvaSetuFlow.map((step, index) => (
-                  <ComparisonCard key={index}>
-                    <div className="group rounded-xl bg-card border border-primary/20 p-4 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 group-hover:scale-105 group-hover:rotate-3 transition-all shadow-md">
-                          <span className="text-2xl">{step.icon}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-sm text-foreground mb-0.5">{step.title}</h4>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{step.description}</p>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <div className="text-lg font-bold text-primary">{step.metric}</div>
-                          <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{step.metricLabel}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </ComparisonCard>
-                ))}
-              </div>
-            </div>
-          </RevealOnScroll>
+    <section ref={containerRef} className="relative h-[250vh]">
+      <div className="sticky top-0 h-screen overflow-hidden bg-gradient-to-b from-background via-secondary/5 to-background flex items-center justify-center">
+        {/* Background elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div 
+            className="absolute inset-0 opacity-[0.015]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+              backgroundSize: '40px 40px',
+            }}
+          />
         </div>
 
-        {/* VS Divider - Desktop */}
-        <div className="hidden lg:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-30" />
-            <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-xl border-4 border-background">
-              <Zap className="w-6 h-6 text-white" />
+        <div className="container mx-auto px-4 relative z-10 w-full max-w-6xl">
+          {/* Header - Stays put or fades slightly */}
+          <div className="text-center mb-12 transition-opacity duration-300">
+             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6">
+              <span className="text-sm font-medium text-primary">The Difference</span>
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+              Job Hunting, <span className="text-primary">Reimagined</span>
+            </h2>
+          </div>
+
+          <div className="relative h-[600px] w-full flex items-center justify-center perspective-1000">
+            {/* Traditional Approach Layer */}
+            <div 
+              className="absolute inset-0 flex items-center justify-center p-4"
+              style={{ 
+                opacity: traditionalOpacity,
+                transform: `scale(${traditionalScale}) translateY(${progress * -50}px) rotateX(${progress * 10}deg)`,
+                filter: `blur(${traditionalBlur}px)`,
+                pointerEvents: traditionalOpacity > 0.1 ? 'auto' : 'none',
+                zIndex: 10
+              }}
+            >
+              <div className="w-full max-w-5xl bg-white/50 dark:bg-card/50 backdrop-blur-2xl rounded-3xl border border-red-200/50 dark:border-red-900/20 shadow-2xl p-8 md:p-10 relative overflow-hidden group">
+                {/* Decoration */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-12 relative z-10">
+                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/10 border border-red-200 dark:border-red-900/30 flex items-center justify-center shadow-lg shadow-red-500/5">
+                    <X className="w-8 h-8 text-red-500" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-3xl font-bold text-foreground mb-2">Traditional Approach</h3>
+                    <p className="text-muted-foreground text-lg">The "Spray & Pray" method causes fatigue.</p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4 relative z-10">
+                  {traditionalFlow.map((step, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-red-50/50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/20 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                      <div className="text-3xl grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">{step.icon}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-foreground">{step.title}</h4>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{step.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-xl font-bold text-red-500/80">{step.metric}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                 <div className="mt-8 text-center relative z-10">
+                  <p className="text-muted-foreground/60 text-sm font-medium tracking-wide uppercase">Results: Frustration & Burnout</p>
+                </div>
+              </div>
+            </div>
+
+            {/* YuvaSetu Approach Layer */}
+             <div 
+              className="absolute inset-0 flex items-center justify-center p-4"
+              style={{ 
+                opacity: yuvaOpacity,
+                transform: `scale(${yuvaScale}) translateY(0) rotateX(0)`,
+                filter: `blur(${yuvaBlur}px)`,
+                pointerEvents: yuvaOpacity > 0.1 ? 'auto' : 'none',
+                zIndex: 20
+              }}
+            >
+              <div className="w-full max-w-5xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-3xl rounded-3xl border border-primary/20 shadow-2xl shadow-primary/10 p-8 md:p-10 relative overflow-hidden">
+                {/* Glowing Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none animate-pulse-slow" />
+                <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-accent/10 rounded-full blur-[80px] pointer-events-none animate-blob-morph" />
+
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-12 relative z-10">
+                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20 animate-glow-breathe">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">YuvaSetu Approach</h3>
+                    <p className="text-muted-foreground text-lg">Intelligent matching. Zero noise.</p>
+                  </div>
+                </div>
+                
+                 <div className="grid md:grid-cols-2 gap-5 relative z-10">
+                  {yuvaSetuFlow.map((step, i) => (
+                    <div key={i} className="group flex items-center gap-5 p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="text-3xl transform group-hover:scale-110 transition-transform duration-300">{step.icon}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">{step.title}</h4>
+                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/10 text-primary font-bold text-sm whitespace-nowrap">
+                          {step.metric}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                 <div className="mt-10 text-center relative z-10">
+                   <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <p className="text-sm font-medium text-foreground">Result: <span className="text-primary font-bold">Career Accelerated</span></p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Bottom Stats */}
-        <RevealOnScroll delay={400}>
-          <div className="bg-card rounded-2xl border border-border p-8 max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="font-semibold text-lg text-foreground mb-2">The Results Speak for Themselves</h3>
-              <p className="text-sm text-muted-foreground">Real outcomes from our matching platform</p>
-            </div>
-            
-            <div className="grid sm:grid-cols-3 gap-8">
-              <div className="text-center group">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
-                  <Zap className="w-7 h-7 text-primary" />
-                </div>
-                <div className="text-3xl font-display font-bold text-foreground mb-1">40%</div>
-                <div className="text-sm text-muted-foreground">Faster Job Search</div>
-              </div>
-
-              <div className="text-center group">
-                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
-                  <Target className="w-7 h-7 text-accent" />
-                </div>
-                <div className="text-3xl font-display font-bold text-foreground mb-1">95%</div>
-                <div className="text-sm text-muted-foreground">Match Accuracy</div>
-              </div>
-
-              <div className="text-center group">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform">
-                  <Eye className="w-7 h-7 text-primary" />
-                </div>
-                <div className="text-3xl font-display font-bold text-foreground mb-1">100%</div>
-                <div className="text-sm text-muted-foreground">Explainable Results</div>
-              </div>
-            </div>
-          </div>
-        </RevealOnScroll>
-
-        {/* CTA */}
-        <RevealOnScroll delay={500} className="text-center mt-12">
-          <a 
-            href="/login/seeker"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
-          >
-            Experience the Difference
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </a>
-        </RevealOnScroll>
       </div>
     </section>
   );

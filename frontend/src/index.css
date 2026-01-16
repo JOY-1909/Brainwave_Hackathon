@@ -833,9 +833,25 @@
       opacity: 1;
     }
     51%,
+    50% {
+      opacity: 1;
+    }
+    51%,
     100% {
       opacity: 0;
     }
+  }
+
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .animate-cursor-blink {
@@ -847,17 +863,16 @@
     0% {
       opacity: 0;
       transform: translateY(20px);
-      filter: blur(10px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
-      filter: blur(0);
     }
   }
 
   .animate-text-reveal {
-    animation: text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: text-reveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
   }
 
   /* Shimmer/shine effect */
@@ -1078,7 +1093,7 @@
   @keyframes card-entrance {
     0% {
       opacity: 0;
-      transform: perspective(1000px) rotateX(10deg) translateY(50px) scale(0.95);
+      transform: perspective(1000px) rotateX(5deg) translateY(30px) scale(0.98);
     }
     100% {
       opacity: 1;
@@ -1087,7 +1102,8 @@
   }
 
   .animate-card-entrance {
-    animation: card-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: card-entrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
   }
 
   /* Staggered entrance with elastic effect */
@@ -1228,6 +1244,11 @@
 
   .animated-border:hover::before {
     opacity: 1;
+  }
+
+  /* Slower bounce animation */
+  .animate-bounce-slow {
+    animation: bounce 2s infinite;
   }
 }
 
