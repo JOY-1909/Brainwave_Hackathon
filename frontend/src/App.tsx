@@ -14,6 +14,7 @@ import { OnboardingLayout } from "./pages/onboarding/OnboardingLayout";
 import { OnboardingChoice } from "./pages/onboarding/OnboardingChoice";
 import { ResumeUpload } from "./pages/onboarding/ResumeUpload";
 import { MultiStepForm } from "./pages/onboarding/MultiStepForm";
+import ScrollToTop from "./components/ScrollToTop";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import { SeekerDashboard } from "./pages/dashboard/seeker/SeekerDashboard";
 import { EmployerDashboard } from "./pages/dashboard/employer/EmployerDashboard";
@@ -25,6 +26,7 @@ import { EmployerSettings } from "./pages/dashboard/employer/EmployerSettings";
 import { MyPostings } from "./pages/dashboard/employer/MyPostings";
 import { JobPostingDetail } from "./pages/dashboard/employer/JobPostingDetail";
 import { CandidateProfile } from "./pages/dashboard/employer/CandidateProfile";
+import { VisualCandidatesDemo } from "./pages/dashboard/employer/VisualCandidatesDemo";
 
 
 import { Applications } from "./pages/dashboard/seeker/Applications";
@@ -50,9 +52,11 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/demo-candidates" element={<VisualCandidatesDemo />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/login/:userType" element={<Login />} />
 
@@ -80,7 +84,7 @@ const App = () => (
                       <Route index element={<EmployerDashboard />} />
                       <Route path="post-job" element={<PostJob />} />
                       <Route path="postings" element={<MyPostings />} />
-                      <Route path="postings/:id" element={<JobPostingDetail />} />
+                      <Route path="postings/:id" element={<VisualCandidatesDemo />} />
                       <Route path="candidate/:id" element={<CandidateProfile />} />
                       <Route path="profile" element={<CompanyProfile />} />
                       <Route path="settings" element={<EmployerSettings />} />
