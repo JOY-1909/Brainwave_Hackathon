@@ -12,6 +12,7 @@ import { useOnboarding } from '@/contexts/OnboardingContext';
 import { ResumePreview } from '@/components/Resume/ResumePreview';
 import { exportResumeToPDF } from '@/lib/resume-export';
 import { toast } from 'sonner';
+import { GenieInline } from '@/features/VoiceGenie/components/GenieInline';
 
 const STEPS = [
   { id: 1, title: 'Personal Details', component: PersonalDetails, icon: User },
@@ -36,11 +37,110 @@ export const MultiStepForm = () => {
 
   const editMode = location.state?.editMode;
   const initialProfileData = location.state?.profileData;
+  const voiceData = location.state?.voiceData;
 
-  // Initialize data for Edit Mode
+  const [showGenie, setShowGenie] = useState(false); // Default to HIDDEN
+
+
+  // Sync Voice State to Form Step
+  const handleVoiceStateChange = (voiceState: string) => {
+      // Map voice states to step numbers
+      if (['ASK_NAME', 'ASK_AGE', 'ASK_EMAIL', 'ASK_PHONE'].some(s => voiceState.includes(s))) {
+          setCurrentStep(1);
+      } else if (['ASK_EDU_DEGREE', 'ASK_EDU_INSTITUTE', 'ASK_EDU_SCORE'].some(s => voiceState.includes(s))) {
+          setCurrentStep(2);
+      } else if (voiceState === 'ASK_LANGUAGES') {
+          setCurrentStep(1); // Languages usually in Personal Info
+      } else if (voiceState === 'ASK_SKILLS') {
+          setCurrentStep(6);
+      }
+  };
+
+  const handleVoicePartialUpdate = (updates: any) => {
+      const newPersonalInfo = { ...data.personalInfo };
+      if (updates.name) newPersonalInfo.fullName = updates.name;
+      if (updates.email) newPersonalInfo.email = updates.email;
+      if (updates.phone) newPersonalInfo.phone = updates.phone;
+      if (updates.age) newPersonalInfo.age = updates.age;
+      if (updates.languages) newPersonalInfo.languages = updates.languages;
+
+      const newSkills = updates.skills ? updates.skills : data.skills;
+      
+      let newEducation = [...(data.education || [])];
+      // Ensure at least one entry exists
+      if (newEducation.length === 0) {
+          newEducation.push({
+              id: crypto.randomUUID(),
+              institution: '',
+              degree: '',
+              year: new Date().getFullYear().toString(),
+              score: ''
+          });
+      }
+
+      // Update specific fields
+      if (updates.educationDegree) newEducation[0].degree = updates.educationDegree;
+      if (updates.educationInstitute) newEducation[0].institution = updates.educationInstitute;
+      if (updates.educationScore) newEducation[0].score = updates.educationScore;
+      
+      // Fallback for legacy monolithic 'education' update (if any)
+      if (updates.education) newEducation[0].degree = updates.education;
+
+      updateData({
+          personalInfo: newPersonalInfo,
+          skills: newSkills,
+          education: newEducation
+      });
+  };
+
+  const handleVoiceComplete = (finalData: any) => {
+      toast.success("Voice Profile Completed!");
+      setShowGenie(false); 
+  };
+
+
+  // Initialize data for Edit Mode or Voice Data
   useEffect(() => {
     if (editMode && initialProfileData) {
       updateData(initialProfileData);
+    } else if (voiceData) {
+      // Map voice data to form structure
+      // voiceData is now likely the STRUCTURED object from the backend
+      // structure: { personalInfo: {...}, education: [...], skills: [...] }
+      
+      const newPersonalInfo = {
+          ...data.personalInfo,
+          ...voiceData.personalInfo,
+          // Fallback if structured data missed something but original voiceData had it? 
+          // The structure endpoint returns a full personalInfo object.
+      };
+
+      let newEducation = data.education;
+      if (Array.isArray(voiceData.education)) {
+           newEducation = voiceData.education.map((edu: any) => ({
+             id: crypto.randomUUID(),
+             institution: edu.institution || '',
+             degree: edu.degree || '',
+             year: edu.year || new Date().getFullYear().toString(),
+             score: ''
+           }));
+      } else if (typeof voiceData.education === 'string') {
+           newEducation = [{
+             id: crypto.randomUUID(),
+             institution: '',
+             degree: voiceData.education,
+             year: new Date().getFullYear().toString(),
+             score: ''
+           }];
+      }
+
+      updateData({
+        personalInfo: newPersonalInfo,
+        skills: voiceData.skills || data.skills || [],
+        education: newEducation
+      });
+      // Optional: Jump to first empty step? Or just start at 1.
+      toast.success("Profile pre-filled from Voice Genie!");
     }
   }, []);
 
@@ -216,11 +316,17 @@ export const MultiStepForm = () => {
     );
   }
 
+
+
+
   return (
     <div className="h-screen w-full bg-white dark:bg-slate-950 flex flex-col xl:flex-row overflow-hidden font-sans">
-      <div className="flex-1 flex flex-col h-full relative z-10 bg-white dark:bg-slate-950 shadow-xl xl:shadow-none xl:border-r border-slate-200 dark:border-slate-800">
-        <div className="flex-none px-6 py-6 border-b border-slate-100 dark:border-slate-900 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+      
+      {/* LEFT: Main Form Area */}
+      <div className="flex-1 flex flex-col h-full relative z-10 bg-white dark:bg-slate-900 shadow-xl transition-all duration-300">
+        <div className="flex-none px-6 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            {/* ... Existing Header Content ... */}
+            <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(editMode ? '/dashboard' : '/onboarding')} className="rounded-full hover:bg-slate-100 -ml-2">
               <ChevronLeft className="w-5 h-5 text-slate-500" />
             </Button>
@@ -233,12 +339,25 @@ export const MultiStepForm = () => {
               </p>
             </div>
           </div>
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <path className="text-slate-100 dark:text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
-              <path className="text-primary transition-all duration-500 ease-out" strokeDasharray={`${((currentStep) / STEPS.length) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-            <span className="absolute text-[10px] font-bold text-primary">{Math.round((currentStep / STEPS.length) * 100)}%</span>
+          
+          <div className="flex items-center gap-2">
+               <Button 
+                variant="outline" 
+                size="sm"
+                className={`rounded-full ${showGenie ? 'bg-blue-50 text-blue-600 border-blue-200' : ''}`}
+                onClick={() => setShowGenie(!showGenie)}
+               >
+                   <Sparkles className="w-4 h-4 mr-2" />
+                   {showGenie ? 'Hide Genie' : 'Ask Genie'}
+               </Button>
+
+               <div className="relative w-10 h-10 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <path className="text-slate-100 dark:text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                        <path className="text-primary transition-all duration-500 ease-out" strokeDasharray={`${((currentStep) / STEPS.length) * 100}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
+                    <span className="absolute text-[10px] font-bold text-primary">{Math.round((currentStep / STEPS.length) * 100)}%</span>
+               </div>
           </div>
         </div>
 
@@ -248,58 +367,66 @@ export const MultiStepForm = () => {
           </div>
         </div>
 
-        <div className="flex-none px-6 py-4 border-t border-slate-100 dark:border-slate-900 bg-white dark:bg-slate-950 flex justify-between items-center z-20">
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={handleBack} disabled={currentStep === 1} className="text-slate-500 hover:text-slate-900">
-              Back
-            </Button>
-            <Button variant="ghost" onClick={handleSaveDraft} className="text-slate-500 hover:text-primary">
-              <Save className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Save</span>
-            </Button>
-          </div>
+        {/* ... Footer ... */}
+        <div className="flex-none px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-between items-center z-20">
+             {/* ... Footer Content ... */}
+             <div className="flex gap-2">
+                <Button variant="ghost" onClick={handleBack} disabled={currentStep === 1} className="text-slate-500 hover:text-slate-900">Back</Button>
+                <Button variant="ghost" onClick={handleSaveDraft} className="text-slate-500 hover:text-primary"><Save className="w-4 h-4 mr-2" /><span className="hidden sm:inline">Save</span></Button>
+             </div>
+             <div className="flex gap-3">
+                 <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 text-white">{isLastStep ? 'Finish' : 'Next'} <ChevronRight className="w-4 h-4 ml-2" /></Button>
+             </div>
+        </div>
+      </div>
 
-          <div className="flex gap-3 relative">
-            {/* Micro-interaction Tick */}
-            {showStepSuccess && (
-              <div className="absolute -top-12 right-1/2 translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-in fade-in slide-in-from-bottom-2 shadow-lg flex items-center gap-1 z-50">
-                <Check className="w-3 h-3" /> Saved
+      {/* RIGHT: Voice Genie Panel (Replaces Preview on logic, or squeeze between?) */}
+      {/* For this refactor, let's Replace the Resume Preview with Genie when active, or split the right side? */}
+      {/* Best UX: Form (Left 60%) | Genie (Right 40%) */}
+      
+      {showGenie ? (
+          <div className="hidden xl:flex w-[400px] h-full bg-slate-50 dark:bg-black relative z-20 shadow-2xl transition-all">
+             <div className="w-full h-full">
+                 <div className="h-full w-full">
+                     {/* Dynamic Import to avoid circular dep issues in some bundlers if any */}
+                     {/* Assuming GenieInline imported at top */}
+                     <GenieInline 
+                        onStateChange={handleVoiceStateChange}
+                        onPartialUpdate={handleVoicePartialUpdate}
+                        onComplete={handleVoiceComplete}
+                        onClose={() => setShowGenie(false)}
+                     />
+                 </div>
+             </div>
+          </div>
+      ) : (
+        /* Original Resume Preview Logic could go here or be toggleable */
+        <div className={`${showPreview ? 'flex' : 'hidden'} fixed inset-0 z-50 bg-slate-100 dark:bg-black/90 xl:relative xl:z-0 xl:flex-1 xl:bg-[#F3F4F6] dark:xl:bg-black/50 flex-col items-center justify-center overflow-hidden transition-all duration-300`}>
+             {/* ... Original Preview Code ... */}
+              <div className="absolute top-6 right-6 z-20 hidden xl:block">
+                <Button variant="secondary" size="sm" className="bg-white/80 backdrop-blur shadow-sm hover:bg-white text-slate-600 rounded-full" onClick={() => setShowPreview(!showPreview)}>
+                    {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                    {showPreview ? 'Hide Preview' : 'Show Preview'}
+                </Button>
               </div>
-            )}
-
-            <Button variant="outline" onClick={handleDownloadPDF} disabled={isExporting} className="hidden md:flex rounded-full border-slate-200">
-              <Download className="w-4 h-4 mr-2" /> PDF
-            </Button>
-            <Button onClick={handleNext} disabled={isExporting} className="rounded-full px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg shadow-black/5 transition-all active:scale-95">
-              {isExporting ? 'Saving...' : isLastStep ? 'Finish' : 'Next'}
-              {!isLastStep && <ChevronRight className="w-4 h-4 ml-2" />}
-            </Button>
-          </div>
+             <div ref={previewContainerRef} className="w-full h-full flex items-center justify-center p-8 lg:p-12 relative">
+                <div className="shadow-2xl shadow-slate-300/50 dark:shadow-black/50 bg-white origin-center transition-transform duration-300 ease-out" style={{ transform: `scale(${scale})` }}>
+                    <ResumePreview data={data} />
+                </div>
+            </div>
         </div>
+      )}
+      
+      {/* Mobile Toggle for Preview/Genie */}
+      <div className="fixed bottom-24 right-6 xl:hidden z-40 flex flex-col gap-2">
+         <Button size="icon" className="h-14 w-14 rounded-full shadow-2xl bg-blue-600 text-white" onClick={() => setShowGenie(!showGenie)}>
+             <Sparkles className="w-6 h-6" />
+         </Button>
+         <Button size="icon" className="h-14 w-14 rounded-full shadow-2xl bg-slate-900 text-white" onClick={() => setShowPreview(!showPreview)}>
+            {showPreview ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+         </Button>
       </div>
 
-      <div className={`${showPreview ? 'flex' : 'hidden xl:flex'} fixed inset-0 z-50 bg-slate-100 dark:bg-black/90 xl:relative xl:z-0 xl:flex-1 xl:bg-[#F3F4F6] dark:xl:bg-black/50 flex-col items-center justify-center overflow-hidden transition-all duration-300`}>
-        <button onClick={() => setShowPreview(false)} className="xl:hidden absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg z-50 text-slate-500">
-          <ChevronRight className="w-6 h-6 rotate-90" />
-        </button>
-        <div className="absolute top-6 right-6 z-20 hidden xmlns:xl:block xl:block">
-          <Button variant="secondary" size="sm" className="bg-white/80 backdrop-blur shadow-sm hover:bg-white text-slate-600 rounded-full" onClick={() => setShowPreview(!showPreview)}>
-            {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-            {showPreview ? 'Hide Preview' : 'Show Preview'}
-          </Button>
-        </div>
-        <div ref={previewContainerRef} className="w-full h-full flex items-center justify-center p-8 lg:p-12 relative">
-          <div className="shadow-2xl shadow-slate-300/50 dark:shadow-black/50 bg-white origin-center transition-transform duration-300 ease-out" style={{ transform: `scale(${scale})` }}>
-            <ResumePreview data={data} />
-          </div>
-        </div>
-      </div>
-
-      <div className="fixed bottom-24 right-6 xl:hidden z-40">
-        <Button size="icon" className="h-14 w-14 rounded-full shadow-2xl bg-slate-900 text-white hover:bg-slate-800" onClick={() => setShowPreview(!showPreview)}>
-          {showPreview ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
-        </Button>
-      </div>
     </div>
   );
 };
