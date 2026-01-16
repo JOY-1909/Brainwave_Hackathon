@@ -95,9 +95,15 @@ export const getRecommendedJobs = async (req: Request, res: Response) => {
             }
         ]);
 
+        // Filter out jobs the user has already applied to
+        const unappliedCandidates = candidates.filter((job: any) => {
+            const hasApplied = job.candidates?.some((c: any) => c.userId?.toString() === user._id.toString());
+            return !hasApplied;
+        });
+
         // 3. In-Memory Reranking (Hybrid Scoring)
         // Now we refine the Top 50 using our full weighted formula.
-        const scoredJobs = candidates.map((job: any) => {
+        const scoredJobs = unappliedCandidates.map((job: any) => {
             // Re-compute exact skill score to be safe and consistent with other vectors
             const exactSkillScore = cosineSimilarity(profile.skillsEmbedding, job.skillsEmbedding);
 
