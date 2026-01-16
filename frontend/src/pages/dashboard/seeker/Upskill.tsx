@@ -35,7 +35,8 @@ const MOCK_TESTS_UI = [
     company: 'Amazon', 
     role: 'SDE / Data Analyst', 
     category: 'Tech',
-    logo: 'https://cdn.simpleicons.org/amazon/FF9900', 
+    // logo: 'https://cdn.simpleicons.org/amazon/FF9900',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg', 
     color: 'bg-orange-50'
   },
   { 

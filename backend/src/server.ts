@@ -134,6 +134,7 @@ app.get('/api/pyqs', async (req, res) => {
 });// -------------------------------------------
 
 // Routes
+// Routes
 app.use('/auth', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/job-seeker', jobSeekerRoutes);
