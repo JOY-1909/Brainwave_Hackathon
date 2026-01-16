@@ -34,8 +34,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-            <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
+          <div className="relative w-10 h-10 rounded-xl bg-transparent border-[3px] border-black flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+            <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display font-bold text-xl text-foreground">
             Yuva<span className="text-primary">Setu</span>

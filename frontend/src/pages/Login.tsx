@@ -299,8 +299,8 @@ export const LoginPage = () => {
             {/* Logo */}
             <div>
               <Link to="/" className="flex items-center gap-3 mb-12 group">
-                <div className={`w-14 h-14 rounded-2xl ${isSeeker ? 'bg-primary' : 'bg-accent'} flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300`}>
-                  <span className="text-primary-foreground font-display font-bold text-3xl">Y</span>
+                <div className={`w-14 h-14 rounded-2xl ${isSeeker ? 'bg-primary/10' : 'bg-accent/10'} border-[3px] border-black flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300 overflow-hidden`}>
+                  <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
                 </div>
                 <span className="font-display font-bold text-3xl text-foreground">
                   Yuva<span className={isSeeker ? 'text-primary-seeker' : 'text-primary-employer'}>Setu</span>
