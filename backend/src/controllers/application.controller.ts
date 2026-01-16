@@ -6,6 +6,7 @@ import { socketService } from '../services/socket.service';
 import JobSeekerProfile from '../models/JobSeekerProfile';
 import User from '../models/User';
 import { mailService } from '../services/mail.service';
+import { VectorService } from '../services/vector.service';
 
 export const applyToJob = async (req: Request, res: Response) => {
     try {
@@ -82,7 +83,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
             if (user && user.email) {
                 // @ts-ignore
                 const companyName = job.companyProfileId?.companyName || "YuvaSetu Employer";
-                
+
                 await mailService.sendStatusUpdateEmail(
                     user.email,
                     job.title,
@@ -158,7 +159,7 @@ export const getJobCandidates = async (req: Request, res: Response) => {
         const { id } = req.params; // Job ID
         const userId = req.user?._id;
 
-        const job = await Job.findOne({ _id: id, employerId: userId });
+        const job = await Job.findOne({ _id: id, employerId: userId }).select('+skillsEmbedding +experienceEmbedding +descriptionEmbedding');
         if (!job) return sendError(res, 404, 'Job not found or access denied');
 
         // Allow fetching detailed candidates
@@ -166,24 +167,62 @@ export const getJobCandidates = async (req: Request, res: Response) => {
 
         const candidateUserIds = job.candidates.map(c => c.userId);
 
-        // Fetch Profiles
+        // Fetch Profiles - selecting MORE fields for Resume Generation
         const profiles = await JobSeekerProfile.find({ userId: { $in: candidateUserIds } })
-            .select('userId personalInfo.fullName personalInfo.profilePicture skills experience');
+            .select('userId personalInfo education experience projects certifications skills skillsEmbedding experienceEmbedding bioEmbedding');
 
         // Map candidates to result
         const candidates = job.candidates.map(candidate => {
             const profile = profiles.find((p: any) => p.userId.toString() === candidate.userId.toString());
+
+            // ... (keeping match score calculation same)
+            let matchScore = 0;
+            let matchDetails = { skills: 0, experience: 0, roleFit: 0 };
+
+            if (profile && profile.skillsEmbedding && job.skillsEmbedding) {
+                const exactSkillScore = VectorService.cosineSimilarity(profile.skillsEmbedding, job.skillsEmbedding);
+                const expScore = VectorService.cosineSimilarity(profile.experienceEmbedding, job.experienceEmbedding);
+                const roleScore = VectorService.cosineSimilarity(profile.bioEmbedding, job.descriptionEmbedding);
+
+                matchScore = Math.round(((exactSkillScore * 0.5) + (expScore * 0.3) + (roleScore * 0.2)) * 100);
+                matchDetails = {
+                    skills: Math.round(exactSkillScore * 100),
+                    experience: Math.round(expScore * 100),
+                    roleFit: Math.round(roleScore * 100)
+                };
+            }
+
             return {
                 userId: candidate.userId,
                 status: candidate.status,
                 appliedAt: candidate.appliedAt,
+                // Personal Info
                 name: profile?.personalInfo?.fullName || 'Unknown Candidate',
+                email: profile?.personalInfo?.email,
+                phone: profile?.personalInfo?.phone,
+                bio: profile?.personalInfo?.bio,
+                links: {
+                    github: profile?.personalInfo?.github,
+                    linkedin: profile?.personalInfo?.linkedin,
+                    portfolio: profile?.personalInfo?.portfolio
+                },
                 avatar: profile?.personalInfo?.profilePicture || '',
+
+                // Detailed Profile Data
                 skills: profile?.skills || [],
-                experience: profile?.experience?.length || 0, // Number of roles as proxy for years
-                matchScore: 0 // Ideally calculate this dynamically
+                experience: profile?.experience || [], // Sending full array now
+                education: profile?.education || [],
+                projects: profile?.projects || [],
+                certifications: profile?.certifications || [],
+
+                matchScore: matchScore,
+                matchDetails: matchDetails,
+                resumeUrl: candidate.resumeUrl
             };
         });
+
+        // Sort by Match Score Descending
+        candidates.sort((a, b) => b.matchScore - a.matchScore);
 
         return sendSuccess(res, candidates, 'Candidates fetched successfully');
 
