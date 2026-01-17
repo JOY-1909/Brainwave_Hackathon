@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const Navbar = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -34,8 +37,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-            <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
+          <div className="relative w-10 h-10 rounded-xl bg-transparent border-[3px] border-black flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+            <img src="/favicon.ico" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-display font-bold text-xl text-foreground">
             Yuva<span className="text-primary">Setu</span>
@@ -51,7 +54,7 @@ export const Navbar = () => {
                 href={link.href}
                 className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium relative group"
               >
-                {link.name}
+                {link.name === 'Features' ? t('navbar.features') : link.name === 'How it Works' ? t('navbar.howItWorks') : link.name === 'Testimonials' ? t('navbar.testimonials') : link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
               </a>
             )
@@ -60,30 +63,31 @@ export const Navbar = () => {
             to="/about"
             className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium relative group"
           >
-            About
+            {t('navbar.about')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
           </Link>
         </div>
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-4">
+          <LanguageSwitcher />
           <ThemeToggle />
           {location.pathname === '/about' ? (
             <Link to="/">
               <Button variant="seeker" size="sm">
-                Back to Home
+                {t('navbar.backToHome')}
               </Button>
             </Link>
           ) : (
             <>
               <Link to="/login/seeker">
                 <Button variant="ghost" size="sm">
-                  Sign In
+                  {t('navbar.signIn')}
                 </Button>
               </Link>
               <Link to="/login/seeker?mode=signup">
                 <Button variant="seeker" size="sm">
-                  Get Started
+                  {t('navbar.getStarted')}
                 </Button>
               </Link>
             </>
@@ -111,7 +115,7 @@ export const Navbar = () => {
                   className="text-muted-foreground hover:text-foreground transition-colors py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {link.name}
+                  {link.name === 'Features' ? t('navbar.features') : link.name === 'How it Works' ? t('navbar.howItWorks') : link.name === 'Testimonials' ? t('navbar.testimonials') : link.name}
                 </a>
               )
             )}
@@ -120,29 +124,33 @@ export const Navbar = () => {
               className="text-muted-foreground hover:text-foreground transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              About
+              {t('navbar.about')}
             </Link>
             <div className="flex items-center justify-between py-2 border-t border-border mt-2 pt-4">
-              <span className="text-sm text-muted-foreground">Theme</span>
+              <span className="text-sm text-muted-foreground">{t('common.language')}</span>
+              <LanguageSwitcher />
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-muted-foreground">{t('common.theme')}</span>
               <ThemeToggle />
             </div>
             <div className="flex flex-col gap-3 pt-4 border-t border-border">
               {location.pathname === '/about' ? (
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="seeker" className="w-full">
-                    Back to Home
+                    {t('navbar.backToHome')}
                   </Button>
                 </Link>
               ) : (
                 <>
                   <Link to="/login/seeker" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      Sign In
+                      {t('navbar.signIn')}
                     </Button>
                   </Link>
                   <Link to="/login/seeker?mode=signup" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="seeker" className="w-full">
-                      Get Started
+                      {t('navbar.getStarted')}
                     </Button>
                   </Link>
                 </>

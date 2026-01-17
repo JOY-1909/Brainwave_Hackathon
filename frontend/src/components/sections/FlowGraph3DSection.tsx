@@ -133,6 +133,9 @@ export const FlowGraph3DSection = () => {
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
               Job Hunting, <span className="text-primary">Reimagined</span>
             </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Experience a recruitment process designed for clarity, speed, and success.
+            </p>
           </div>
 
           <div className="relative h-[600px] w-full flex items-center justify-center perspective-1000">
@@ -203,7 +206,7 @@ export const FlowGraph3DSection = () => {
                     <Check className="w-8 h-8 text-white" />
                   </div>
                   <div className="text-center md:text-left">
-                    <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">YuvaSetu Approach</h3>
+                    <h3 className="text-3xl font-bold text-foreground">YuvaSetu Approach</h3>
                     <p className="text-muted-foreground text-lg">Intelligent matching. Zero noise.</p>
                   </div>
                 </div>

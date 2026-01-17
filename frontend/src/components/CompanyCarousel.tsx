@@ -73,7 +73,7 @@ export const CompanyCarousel = () => {
                         <img
                           src={company.logo}
                           alt={`${company.name} logo`}
-                          className="w-20 h-20 object-contain group-hover:scale-110 transition-transform duration-300"
+                          className="w-20 h-20 object-contain group-hover:scale-110 transition-transform duration-300 dark:bg-white dark:rounded-xl dark:p-2"
                           onError={() => handleImageError(company.name)}
                         />
                       ) : (

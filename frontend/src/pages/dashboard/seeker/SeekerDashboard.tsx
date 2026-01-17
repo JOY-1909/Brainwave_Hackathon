@@ -121,7 +121,7 @@ export const SeekerDashboard = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in relative">
       {/* Welcome & Stats Section */}
       {/* Welcome & Stats Section */}
       <div className="flex flex-col xl:flex-row justify-between items-end gap-6">
@@ -230,6 +230,9 @@ export const SeekerDashboard = () => {
           <JobFiltersWidget filters={filters} setFilters={setFilters} />
         </div>
       </div>
+
+
+
     </div>
   );
 };

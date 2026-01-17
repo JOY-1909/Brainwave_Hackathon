@@ -19,8 +19,10 @@ import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { Hero3DElement } from "@/components/Hero3DElement";
 import { TypewriterText } from "@/components/TypewriterText";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const HeroSection = () => {
+  const { t } = useTranslation();
   const statCard1 = use3DEffect(10);
   const statCard2 = use3DEffect(10);
   const statCard3 = use3DEffect(10);
@@ -137,7 +139,7 @@ export const HeroSection = () => {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 animate-elastic-in shimmer-overlay relative overflow-hidden tilt-effect">
                   <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-muted-foreground">
-                    AI-Powered Career Platform
+                    {t('hero.badge')}
                   </span>
                 </div>
 
@@ -150,7 +152,7 @@ export const HeroSection = () => {
                   }}
                 >
                   <span className="animate-text-reveal inline-block">
-                    Your Career Journey
+                    {t('hero.title1')}
                   </span>
                   <br />
                   <span
@@ -158,7 +160,7 @@ export const HeroSection = () => {
                     style={{ transform: "translateZ(20px)" }}
                   >
                     <TypewriterText
-                      text={["Starts Here.", "Reimagined.", "Amplified."]}
+                      text={t('hero.title2Animated', { returnObjects: true }) as string[]}
                       speed={100}
                       deleteSpeed={60}
                       pauseDuration={2500}
@@ -173,8 +175,7 @@ export const HeroSection = () => {
                   className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 animate-text-reveal"
                   style={{ animationDelay: "0.3s" }}
                 >
-                  YuvaSetu eliminates opportunity fatigue with transparent AI
-                  matching, showing you only the most relevant opportunities.
+                  {t('hero.subtitle')}
                 </p>
 
                 {/* Animated gradient line */}
@@ -192,7 +193,7 @@ export const HeroSection = () => {
                       className="group min-w-[240px] shadow-3d-hover transition-all duration-300 magnetic-hover animated-border relative overflow-hidden animate-glow-breathe"
                     >
                       <UserSearch className="w-5 h-5" />
-                      I'm a Job Seeker
+                      {t('hero.ctaSeeker')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
@@ -203,7 +204,7 @@ export const HeroSection = () => {
                       className="group min-w-[240px] shadow-3d-hover transition-all duration-300 magnetic-hover animated-border relative overflow-hidden"
                     >
                       <Briefcase className="w-5 h-5" />
-                      I'm an Employer
+                      {t('hero.ctaEmployer')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
@@ -230,7 +231,7 @@ export const HeroSection = () => {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground font-medium relative z-10">
-                      Faster Matching
+                      {t('hero.stat1')}
                     </p>
                   </div>
                   <div
@@ -246,7 +247,7 @@ export const HeroSection = () => {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground font-medium relative z-10">
-                      Curated Jobs
+                      {t('hero.stat2')}
                     </p>
                   </div>
                   <div
@@ -265,7 +266,7 @@ export const HeroSection = () => {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground font-medium relative z-10">
-                      Explainable AI
+                      {t('hero.stat3')}
                     </p>
                   </div>
                 </div>
@@ -292,7 +293,7 @@ export const HeroSection = () => {
       >
         <div className="flex flex-col items-center gap-2 animate-bounce-slow">
           <span className="text-xs font-medium text-muted-foreground tracking-widest uppercase">
-            Scroll Down
+            {t('common.scrollDown')}
           </span>
           <ArrowRight className="w-4 h-4 text-primary rotate-90" />
         </div>

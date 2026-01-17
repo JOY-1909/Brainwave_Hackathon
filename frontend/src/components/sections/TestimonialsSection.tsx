@@ -1,5 +1,6 @@
 import { RevealOnScroll, StaggerContainer } from '@/components/RevealOnScroll';
 import { Star, Quote, Heart, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const testimonials = [
   {
@@ -47,6 +48,53 @@ const testimonials = [
 ];
 
 export const TestimonialsSection = () => {
+  const { t } = useTranslation();
+  
+  const testimonials = [
+    {
+      name: t('testimonials.testimonial1.name'),
+      role: t('testimonials.testimonial1.role'),
+      avatar: '/profile_priya_1767625978569.png',
+      content: t('testimonials.testimonial1.content'),
+      rating: 5,
+    },
+    {
+      name: t('testimonials.testimonial2.name'),
+      role: t('testimonials.testimonial2.role'),
+      avatar: '/profile_rahul_1767625995213.png',
+      content: t('testimonials.testimonial2.content'),
+      rating: 5,
+    },
+    {
+      name: t('testimonials.testimonial3.name'),
+      role: t('testimonials.testimonial3.role'),
+      avatar: '/profile_ananya_1767626018394.png',
+      content: t('testimonials.testimonial3.content'),
+      rating: 5,
+    },
+    {
+      name: t('testimonials.testimonial4.name'),
+      role: t('testimonials.testimonial4.role'),
+      avatar: '/profile_vikram_1767626037611.png',
+      content: t('testimonials.testimonial4.content'),
+      rating: 5,
+    },
+    {
+      name: t('testimonials.testimonial5.name'),
+      role: t('testimonials.testimonial5.role'),
+      avatar: '/profile_neha_1767626053701.png',
+      content: t('testimonials.testimonial5.content'),
+      rating: 5,
+    },
+    {
+      name: t('testimonials.testimonial6.name'),
+      role: t('testimonials.testimonial6.role'),
+      avatar: '/profile_arjun_1767626074378.png',
+      content: t('testimonials.testimonial6.content'),
+      rating: 5,
+    },
+  ];
+  
   return (
     <section id="testimonials" className="relative py-20 md:py-32 overflow-hidden bg-gradient-to-b from-background via-muted/5 to-background">
       {/* Subtle background */}
@@ -60,14 +108,14 @@ export const TestimonialsSection = () => {
           <div className="inline-block mb-4">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold border border-accent/20">
               <Heart className="w-4 h-4 fill-accent" />
-              Real talk from real students
+              {t('testimonials.badge')}
             </span>
           </div>
           <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
-            Students <span className="text-primary">Actually Like This</span>
+            {t('testimonials.title')}<span className="text-primary">{t('testimonials.titleHighlight')}</span>
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what people are saying 💬
+            {t('testimonials.subtitle')}
           </p>
         </RevealOnScroll>
         
@@ -100,7 +148,7 @@ export const TestimonialsSection = () => {
                   />
                 ))}
                 <span className="text-xs text-muted-foreground ml-1">
-                  {testimonial.rating}/5
+                  {t('testimonials.rating', { rating: testimonial.rating })}
                 </span>
               </div>
               
@@ -137,11 +185,11 @@ export const TestimonialsSection = () => {
         {/* Bottom CTA - casual */}
         <RevealOnScroll delay={400} className="text-center mt-12 md:mt-16">
           <p className="text-muted-foreground text-sm md:text-base mb-4">
-            Join 10,000+ students who've found better opportunities
+            {t('testimonials.bottomText')}
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-strong border border-primary/20">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Your success story could be next</span>
+            <span className="text-sm font-medium">{t('testimonials.nextStory')}</span>
           </div>
         </RevealOnScroll>
       </div>

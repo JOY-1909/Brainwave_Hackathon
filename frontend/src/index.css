@@ -110,8 +110,8 @@
     --popover: 222 45% 12%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary - much more vibrant and visible */
-    --primary: 221 90% 65%;
+    /* Primary - much more vibrant and visible but balanced */
+    --primary: 221 70% 55%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - warmer grays with more character */
@@ -122,8 +122,8 @@
     --muted: 215 35% 18%;
     --muted-foreground: 217 15% 72%;
 
-    /* Accent - vibrant and energetic */
-    --accent: 174 80% 55%;
+    /* Accent - vibrant and energetic but balanced */
+    --accent: 174 60% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -132,12 +132,12 @@
     /* Borders - much more visible */
     --border: 215 30% 22%;
     --input: 215 30% 22%;
-    --ring: 221 90% 65%;
+    --ring: 221 70% 55%;
 
-    /* Role-specific colors - vibrant */
-    --seeker: 221 90% 65%;
+    /* Role-specific colors - vibrant but legible */
+    --seeker: 221 70% 55%;
     --seeker-foreground: 0 0% 100%;
-    --employer: 174 80% 55%;
+    --employer: 174 60% 45%;
     --employer-foreground: 0 0% 100%;
 
     /* Custom gradients for dark mode - super vibrant */
