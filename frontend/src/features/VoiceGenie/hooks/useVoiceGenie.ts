@@ -140,26 +140,58 @@ export const useVoiceGenie = ({
 
 
   // --- TTS ---
-  const speak = useCallback((text: string, onEnd?: () => void) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    // utterance.lang = 'en-US'; // Optional: Enforce English if desired, or let browser default
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      if (onEnd) onEnd();
-    };
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+
+  // --- TTS ---
+  const speak = useCallback(async (text: string, onEnd?: () => void) => {
+    try {
+        // Stop any current playback
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+        }
+
+        setIsSpeaking(true);
+        const apiUrl = 'http://localhost:5000/api/tts/stream'; 
+        
+        const response = await axios.post(apiUrl, { text }, {
+             responseType: 'blob'
+        });
+        
+        const audioUrl = URL.createObjectURL(response.data);
+        const audio = new Audio(audioUrl);
+        setAudioElement(audio); // Keep ref to stop if needed
+        
+        audio.onended = () => {
+            setIsSpeaking(false);
+            if (onEnd) onEnd();
+            URL.revokeObjectURL(audioUrl);
+            setAudioElement(null);
+        };
+        
+        audio.onerror = (e) => {
+            console.error("Audio playback error", e);
+            setIsSpeaking(false);
+            URL.revokeObjectURL(audioUrl);
+            setAudioElement(null);
+        };
+
+        await audio.play();
+
+    } catch (err) {
+        console.error("TTS Failed:", err);
+        setIsSpeaking(false);
+    }
   }, []);
 
   const cancelSpeech = useCallback(() => {
-      if(window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          setIsSpeaking(false);
+      if(audioElement) {
+          audioElement.pause();
+          audioElement.currentTime = 0;
+          setAudioElement(null);
       }
-  }, []);
+      setIsSpeaking(false);
+  }, [audioElement]);
 
   // --- Structure Data ---
   const structureProfile = useCallback(async (context: any) => {

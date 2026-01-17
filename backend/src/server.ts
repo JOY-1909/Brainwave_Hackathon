@@ -80,6 +80,7 @@ import employerRoutes from './routes/employer.routes';
 import jobRoutes from './routes/job.routes';
 import recommendationRoutes from './routes/recommendation.routes';
 import sttRoutes from './routes/stt.routes';
+import ttsRoutes from './routes/tts.routes';
 
 import { createServer } from 'http';
 import { socketService } from './services/socket.service';
@@ -109,7 +110,7 @@ app.use('/uploads', express.static('uploads'));
 // --- UPDATED ROUTE: Force 'brainwave' Database ---
 app.get('/api/pyqs', async (req, res) => {
     try {
-        if (mongoose.connection.readyState !== 1) {
+        if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
             return res.status(500).json({ error: "Database not connected yet" });
         }
 
@@ -119,7 +120,7 @@ app.get('/api/pyqs', async (req, res) => {
 
         // 2. FORCE connection to 'brainwave' database
         // This ensures we look where the Python script wrote the data
-        const targetDb = mongoose.connection.client.db('brainwave');
+        const targetDb = mongoose.connection.getClient().db('brainwave');
         const collection = targetDb.collection('mocktest_data');
 
         // 3. Fetch data
@@ -138,6 +139,7 @@ app.get('/api/pyqs', async (req, res) => {
 // Routes
 app.use('/auth', authRoutes);
 app.use('/api/stt', sttRoutes); // Public STT route
+app.use('/api/tts', ttsRoutes); // Public TTS route
 import structureRoutes from './routes/structure.routes';
 app.use('/api/structure', structureRoutes); // Public Structure route
 app.use('/api', protectedRoutes);
