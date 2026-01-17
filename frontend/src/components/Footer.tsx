@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   
   const footerLinks = {
@@ -52,8 +54,7 @@ export const Footer = () => {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
-              AI-powered career platform that eliminates opportunity fatigue 
-              with transparent, intelligent job matching.
+              {t('footer.tagline')}
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -71,7 +72,7 @@ export const Footer = () => {
           
           {/* Links */}
           <div>
-            <h3 className="font-display font-bold text-foreground mb-4">Product</h3>
+            <h3 className="font-display font-bold text-foreground mb-4">{t('footer.product')}</h3>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
@@ -84,7 +85,7 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-display font-bold text-foreground mb-4">Company</h3>
+            <h3 className="font-display font-bold text-foreground mb-4">{t('footer.company')}</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -97,7 +98,7 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-display font-bold text-foreground mb-4">Resources</h3>
+            <h3 className="font-display font-bold text-foreground mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
@@ -110,7 +111,7 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-display font-bold text-foreground mb-4">Legal</h3>
+            <h3 className="font-display font-bold text-foreground mb-4">{t('footer.legal')}</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
@@ -126,10 +127,10 @@ export const Footer = () => {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} YuvaSetu by Team Havoc. All rights reserved.
+            {t('footer.copyright', { year: currentYear })}
           </p>
           <p className="text-sm text-muted-foreground">
-            Built with ❤️ for students everywhere
+            {t('footer.builtWith')}
           </p>
         </div>
       </div>

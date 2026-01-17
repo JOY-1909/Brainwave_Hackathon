@@ -1,6 +1,7 @@
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const faqs = [
   {
@@ -31,6 +32,34 @@ const faqs = [
 
 export const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { t } = useTranslation();
+
+   const faqs = [
+    {
+      question: t('faq.question1'),
+      answer: t('faq.answer1')
+    },
+    {
+      question: t('faq.question2'),
+      answer: t('faq.answer2')
+    },
+    {
+      question: t('faq.question3'),
+      answer: t('faq.answer3')
+    },
+    {
+      question: t('faq.question4'),
+      answer: t('faq.answer4')
+    },
+    {
+      question: t('faq.question5'),
+      answer: t('faq.answer5')
+    },
+    {
+      question: t('faq.question6'),
+      answer: t('faq.answer6')
+    }
+  ];
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -43,13 +72,13 @@ export const FAQSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <RevealOnScroll className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-            Got Questions?
+            {t('faq.badge')}
           </span>
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
-            Frequently Asked <span className="text-primary">Questions</span>
+            {t('faq.title')}<span className="text-primary">{t('faq.titleHighlight')}</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Everything you need to know about YuvaSetu and how we're transforming career discovery.
+            {t('faq.subtitle')}
           </p>
         </RevealOnScroll>
 
@@ -87,9 +116,9 @@ export const FAQSection = () => {
 
         <RevealOnScroll className="text-center mt-12">
           <p className="text-muted-foreground">
-            Still have questions?{' '}
+            {t('faq.stillHaveQuestions')}{' '}
             <a href="mailto:contact@yuvasetu.com" className="text-primary hover:underline font-medium">
-              Contact us
+              {t('faq.contactUs')}
             </a>
           </p>
         </RevealOnScroll>
