@@ -71,11 +71,11 @@ const cleanName = (input: string) => {
 
 export const FLOW_CONFIG: Partial<Record<VoiceState, StateConfig>> = {
   GREETING: {
-    message: "Namaste! I'm Genie. Let's build your profile. First, what is your full name?",
+    message: "Namaste! I'm Genie. Let's build your profile.",
     nextState: 'ASK_NAME',
   },
   ASK_NAME: { 
-    message: 'Great. What is your full name?',
+    message: 'First, What is your full name?',
     nextState: 'VALIDATE_NAME',
   },
   VALIDATE_NAME: {
